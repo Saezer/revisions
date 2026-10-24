@@ -1,0 +1,142 @@
+{
+  "prenom": "Seb",
+  "cree": 1792832615184,
+  "maj": 1792832803239,
+  "reglages": {
+    "tables": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "nb": 30,
+    "mode": "entrainement",
+    "melange": true
+  },
+  "compteurs": {
+    "bonnes": 9,
+    "reponses": 10,
+    "serie": 9,
+    "serieMax": 9,
+    "seances": 1,
+    "sansFaute": 0,
+    "courage": 0,
+    "faibles": 0,
+    "eclairs": 5,
+    "revanches": 0,
+    "chronoRecord": 0,
+    "jours": [
+      "2026-10-24"
+    ]
+  },
+  "succes": {
+    "premier_pas": 1792832761533,
+    "eclair": 1792832767311,
+    "serie_5": 1792832774607
+  },
+  "sujets": {
+    "multiplications": {
+      "faits": {
+        "9x1": {
+          "v": 1,
+          "b": 0,
+          "n": 0,
+          "d": 1792832757101,
+          "rate": true
+        },
+        "10x6": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832761533,
+          "rate": false
+        },
+        "8x1": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832764774,
+          "rate": false
+        },
+        "7x5": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832767310,
+          "rate": false
+        },
+        "9x6": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832772383,
+          "rate": false
+        },
+        "2x5": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832774607,
+          "rate": false
+        },
+        "1x1": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832776206,
+          "rate": false
+        },
+        "7x2": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832778470,
+          "rate": false
+        },
+        "8x4": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832782256,
+          "rate": false
+        },
+        "9x9": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1792832784630,
+          "rate": false
+        }
+      },
+      "seances": [
+        {
+          "date": 1792832785288,
+          "mode": "entrainement",
+          "tables": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "total": 10,
+          "bons": 9,
+          "duree": 30724,
+          "abandon": false
+        }
+      ]
+    }
+  },
+  "id": "seb"
+}
