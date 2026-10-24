@@ -1,0 +1,1163 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cahier de révisions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;700;800&display=swap">
+<style>
+/* Mise en page : un cahier à petits carreaux (clair) ou une ardoise (sombre) ;
+   une colonne centrale, des blocs posés sur la page comme des feuilles. */
+:root {
+  --papier: #f8faff;
+  --carreau: #e1e8f6;
+  --surface: #ffffff;
+  --trait: #cbd5ec;
+  --encre: #1b2766;
+  --doux: #58628c;
+  --stylo: #2b4bd6;
+  --sur-stylo: #ffffff;
+  --rouge: #d2372c;
+  --vert: #1c8f4e;
+  --fluo: #ffe14d;
+  --sur-fluo: #2b2400;
+  --ombre: 0 1px 0 rgba(27, 39, 102, .08), 0 6px 18px -10px rgba(27, 39, 102, .35);
+  --f-titre: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --f-texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --rayon: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #1c2a26; --carreau: #233530; --surface: #223430; --trait: #38504a;
+    --encre: #eef4ec; --doux: #a7b9b0; --stylo: #93b3ff; --sur-stylo: #10183a;
+    --rouge: #ff8073; --vert: #72dc98; --fluo: #ffe066; --sur-fluo: #2b2400;
+    --ombre: 0 1px 0 rgba(0, 0, 0, .25), 0 8px 20px -12px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #1c2a26; --carreau: #233530; --surface: #223430; --trait: #38504a;
+  --encre: #eef4ec; --doux: #a7b9b0; --stylo: #93b3ff; --sur-stylo: #10183a;
+  --rouge: #ff8073; --vert: #72dc98; --fluo: #ffe066; --sur-fluo: #2b2400;
+  --ombre: 0 1px 0 rgba(0, 0, 0, .25), 0 8px 20px -12px rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background-color: var(--papier);
+  background-image:
+    linear-gradient(var(--carreau) 1px, transparent 1px),
+    linear-gradient(90deg, var(--carreau) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--encre);
+  font: 16px/1.5 var(--f-texte);
+  min-height: 100vh;
+}
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding-block: 18px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 18px;
+}
+h1, h2, h3 { font-family: var(--f-titre); line-height: 1.1; margin: 0; text-wrap: balance; }
+h2 { font-size: 1.45rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--stylo); outline-offset: 2px; }
+
+/* En-tête */
+.entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.marque { display: flex; align-items: center; gap: 10px; }
+.marque svg { flex: none; }
+.marque h1 { font-size: 1.6rem; }
+.marque small { display: block; color: var(--doux); font: 600 .78rem var(--f-texte); letter-spacing: .06em; text-transform: uppercase; }
+.puce-eleve {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 2px solid var(--trait); border-radius: 999px;
+  padding: 4px 6px 4px 14px; font-weight: 700;
+}
+.puce-eleve button { border: 0; background: transparent; color: var(--stylo); padding: 4px 8px; border-radius: 999px; font-size: .9rem; }
+.puce-eleve button:hover { background: var(--carreau); }
+
+/* Blocs */
+.bloc {
+  background: var(--surface); border: 2px solid var(--trait); border-radius: var(--rayon);
+  padding: 18px; box-shadow: var(--ombre); display: grid; gap: 14px; min-width: 0;
+}
+.bloc-tete { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.etiquette { color: var(--doux); font-size: .78rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.note { color: var(--doux); font-size: .92rem; }
+.grille-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 18px; align-items: start; }
+
+/* Boutons */
+.btn {
+  border: 2px solid var(--trait); background: var(--surface); border-radius: 12px;
+  padding: 10px 16px; font-weight: 700; transition: transform .08s ease, background .15s;
+}
+.btn:hover { background: var(--carreau); }
+.btn:active { transform: translateY(1px); }
+.btn-principal {
+  background: var(--stylo); color: var(--sur-stylo); border-color: var(--stylo);
+  font-family: var(--f-titre); font-size: 1.3rem; padding: 10px 26px; border-radius: 14px;
+}
+.btn-principal:hover { background: var(--stylo); filter: brightness(1.08); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.rangee { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* Profils */
+.profils { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.carte-profil {
+  display: grid; gap: 2px; justify-items: start; text-align: left;
+  border: 2px solid var(--trait); background: var(--surface); border-radius: var(--rayon); padding: 14px;
+}
+.carte-profil:hover { border-color: var(--stylo); }
+.carte-profil strong { font-family: var(--f-titre); font-size: 1.35rem; }
+.carte-profil span { color: var(--doux); font-size: .88rem; }
+.champ { display: grid; gap: 6px; }
+.champ label { font-weight: 700; }
+.saisie {
+  border: 2px solid var(--trait); background: var(--papier); border-radius: 12px; padding: 10px 12px; width: 100%;
+}
+.saisie:focus { border-color: var(--stylo); outline: none; }
+
+/* Chiffres clés */
+.chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.chiffre { background: var(--surface); border: 2px solid var(--trait); border-radius: var(--rayon); padding: 12px 14px; }
+.chiffre b { display: block; font: 800 2rem/1 var(--f-titre); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.chiffre span { color: var(--doux); font-size: .85rem; }
+
+/* Choix de la séance */
+.choix-tables { display: flex; flex-wrap: wrap; gap: 8px; }
+.puce {
+  min-width: 46px; height: 46px; border-radius: 12px; border: 2px solid var(--trait); background: var(--papier);
+  font: 700 1.15rem var(--f-titre); font-variant-numeric: tabular-nums;
+}
+.puce[aria-pressed="true"] { background: var(--stylo); color: var(--sur-stylo); border-color: var(--stylo); }
+.raccourcis { display: flex; flex-wrap: wrap; gap: 6px; }
+.raccourcis button { border: 0; background: transparent; color: var(--stylo); font-weight: 700; padding: 4px 6px; border-radius: 8px; text-decoration: underline; text-underline-offset: 3px; }
+.segments { display: inline-flex; flex-wrap: wrap; border: 2px solid var(--trait); border-radius: 12px; overflow: hidden; background: var(--papier); }
+.segments button { border: 0; background: transparent; padding: 8px 14px; font-weight: 700; }
+.segments button + button { border-left: 2px solid var(--trait); }
+.segments button[aria-pressed="true"] { background: var(--stylo); color: var(--sur-stylo); }
+.modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.mode {
+  text-align: left; border: 2px solid var(--trait); background: var(--papier); border-radius: 12px; padding: 10px 12px;
+  display: grid; gap: 2px;
+}
+.mode strong { font-family: var(--f-titre); font-size: 1.1rem; }
+.mode span { color: var(--doux); font-size: .85rem; line-height: 1.35; }
+.mode[aria-pressed="true"] { border-color: var(--stylo); box-shadow: inset 0 0 0 2px var(--stylo); }
+.case { display: inline-flex; gap: 8px; align-items: center; font-weight: 700; }
+.case input { width: 20px; height: 20px; accent-color: var(--stylo); }
+
+/* Table de Pythagore */
+.pytha-boite { overflow-x: auto; }
+.pytha { border-collapse: separate; border-spacing: 3px; font-variant-numeric: tabular-nums; margin: 0 auto; }
+.pytha th { font: 700 .85rem var(--f-titre); color: var(--doux); width: 34px; height: 28px; }
+.pytha td {
+  width: 38px; height: 32px; text-align: center; border-radius: 7px; font-size: .82rem; font-weight: 700;
+  background: var(--papier); border: 1px dashed var(--trait); color: var(--doux);
+}
+.pytha td.n1 { background: color-mix(in srgb, var(--vert) 22%, var(--surface)); border: 0; color: var(--encre); }
+.pytha td.n2 { background: color-mix(in srgb, var(--vert) 42%, var(--surface)); border: 0; color: var(--encre); }
+.pytha td.n3 { background: color-mix(in srgb, var(--vert) 65%, var(--surface)); border: 0; color: var(--encre); }
+.pytha td.n4, .pytha td.n5 { background: var(--vert); border: 0; color: var(--surface); }
+.pytha td.fragile { background: color-mix(in srgb, var(--rouge) 30%, var(--surface)); border: 0; color: var(--encre); }
+.pytha td.difficile { background: var(--rouge); border: 0; color: var(--surface); }
+.legende { display: flex; flex-wrap: wrap; gap: 12px; font-size: .85rem; color: var(--doux); }
+.legende i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; }
+
+/* À retravailler */
+.liste-faibles { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.liste-faibles li { display: grid; grid-template-columns: 6.5rem 1fr 3.2rem; align-items: center; gap: 10px; }
+.liste-faibles .calc { font: 700 1.1rem var(--f-titre); font-variant-numeric: tabular-nums; }
+.jauge { height: 10px; border-radius: 99px; background: var(--carreau); overflow: hidden; }
+.jauge > i { display: block; height: 100%; border-radius: 99px; background: var(--rouge); }
+.liste-faibles .pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--doux); font-size: .9rem; }
+
+/* Progression */
+.graphe { width: 100%; height: auto; display: block; }
+.graphe .axe { stroke: var(--trait); stroke-width: 1; }
+.graphe .txt { fill: var(--doux); font: 11px var(--f-texte); }
+.graphe .barre { fill: var(--stylo); }
+.graphe .barre.top { fill: var(--vert); }
+.graphe .barre.bas { fill: var(--rouge); }
+
+/* Succès */
+.succes-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 10px; }
+.succes { display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; border: 2px solid var(--trait); background: var(--papier); }
+.succes .medaille {
+  width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+  font: 800 .95rem/1 var(--f-titre); text-align: center; letter-spacing: -.02em;
+  background: var(--carreau); color: var(--doux); border: 3px dashed var(--trait);
+}
+.succes.obtenu { border-color: color-mix(in srgb, var(--fluo) 70%, var(--trait)); }
+.succes.obtenu .medaille { background: var(--fluo); color: var(--sur-fluo); border: 3px solid color-mix(in srgb, var(--fluo) 60%, #000); }
+.succes strong { display: block; font-family: var(--f-titre); font-size: 1rem; line-height: 1.15; }
+.succes span { color: var(--doux); font-size: .8rem; line-height: 1.3; display: block; }
+.succes:not(.obtenu) strong { color: var(--doux); }
+
+/* Quiz */
+.quiz { display: grid; gap: 16px; justify-items: center; text-align: center; padding-block: 8px; }
+.quiz-haut { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.progres { flex: 1; min-width: 140px; height: 14px; border-radius: 99px; background: var(--carreau); overflow: hidden; }
+.progres > i { display: block; height: 100%; width: 0; background: var(--stylo); border-radius: 99px; transition: width .3s ease; }
+.compteur { font: 700 1.05rem var(--f-titre); font-variant-numeric: tabular-nums; min-width: 4.5rem; }
+.serie { font: 700 1rem var(--f-titre); color: var(--doux); }
+.serie.chaude { color: var(--rouge); }
+.ardoise {
+  width: min(100%, 560px); background: var(--surface); border: 3px solid var(--trait); border-radius: 22px;
+  padding: 26px 18px 22px; box-shadow: var(--ombre); display: grid; gap: 16px; justify-items: center;
+}
+.question { font: 800 clamp(3rem, 14vw, 5.6rem)/1 var(--f-titre); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.question .op { color: var(--stylo); margin: 0 .12em; }
+.reponse-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; }
+.reponse {
+  width: 7ch; text-align: center; font: 800 2.6rem/1 var(--f-titre); font-variant-numeric: tabular-nums;
+  border: 3px solid var(--trait); border-radius: 16px; background: var(--papier); padding: 8px 6px;
+}
+.reponse:focus { outline: none; border-color: var(--stylo); }
+.reponse.juste { border-color: var(--vert); color: var(--vert); }
+.reponse.faux { border-color: var(--rouge); color: var(--rouge); text-decoration: line-through; }
+.retour { min-height: 3.2em; font-weight: 700; font-size: 1.15rem; }
+.retour.juste { color: var(--vert); }
+.retour.faux { color: var(--rouge); }
+.retour .correction { display: block; color: var(--encre); font: 800 1.6rem var(--f-titre); }
+.chrono { font: 800 1.6rem var(--f-titre); font-variant-numeric: tabular-nums; }
+.chrono.urgent { color: var(--rouge); }
+@keyframes secoue { 0%,100% { transform: translateX(0) } 25% { transform: translateX(-8px) } 75% { transform: translateX(8px) } }
+@keyframes bondit { 0% { transform: scale(1) } 40% { transform: scale(1.08) } 100% { transform: scale(1) } }
+.secoue { animation: secoue .3s ease; }
+.bondit { animation: bondit .35s ease; }
+
+/* Bilan */
+.score { font: 800 clamp(3.4rem, 15vw, 5.5rem)/1 var(--f-titre); font-variant-numeric: tabular-nums; }
+.score small { font-size: .4em; color: var(--doux); }
+.erreurs { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; text-align: left; width: min(100%, 420px); }
+.erreurs li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 10px; background: var(--papier); border: 2px solid var(--trait); }
+.erreurs b { font: 700 1.15rem var(--f-titre); font-variant-numeric: tabular-nums; }
+.erreurs s { color: var(--rouge); }
+.nouveaux { display: grid; gap: 10px; width: min(100%, 520px); }
+
+/* Bulle de succès */
+.bulles {
+  position: fixed; z-index: 30; display: grid; gap: 10px; pointer-events: none;
+  right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(340px, calc(100vw - 32px));
+}
+.bulle {
+  display: grid; grid-template-columns: 48px 1fr; gap: 10px; align-items: center; text-align: left;
+  background: var(--surface); border: 3px solid var(--fluo); border-radius: 16px; padding: 10px 12px; box-shadow: var(--ombre);
+  animation: arrive .4s cubic-bezier(.2, 1.4, .4, 1);
+}
+.bulle .medaille { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--fluo); color: var(--sur-fluo); font: 800 .9rem var(--f-titre); }
+.bulle small { display: block; color: var(--doux); font-size: .72rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.bulle strong { font-family: var(--f-titre); font-size: 1.05rem; }
+@keyframes arrive { from { transform: translateY(20px) scale(.9); opacity: 0 } to { transform: none; opacity: 1 } }
+#confettis { position: fixed; inset: 0; pointer-events: none; z-index: 25; width: 100%; height: 100%; }
+
+.vide { border: 2px dashed var(--trait); border-radius: 12px; padding: 16px; color: var(--doux); text-align: center; }
+.avertissement { background: color-mix(in srgb, var(--fluo) 35%, var(--surface)); border-radius: 10px; padding: 8px 12px; font-size: .9rem; }
+
+@media (max-width: 520px) {
+  .liste-faibles li { grid-template-columns: 5.5rem 1fr 3rem; }
+  .bloc { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="page">
+  <header class="entete">
+    <div class="marque">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="3" y="3" width="34" height="34" rx="9" fill="var(--stylo)"></rect>
+        <path d="M13 13 L27 27 M27 13 L13 27" stroke="var(--sur-stylo)" stroke-width="4.5" stroke-linecap="round"></path>
+      </svg>
+      <div>
+        <small>Révisions</small>
+        <h1>Cahier de révisions</h1>
+      </div>
+    </div>
+    <div class="puce-eleve" id="puce-eleve" hidden>
+      <span id="nom-eleve"></span>
+      <button type="button" id="changer-eleve">Changer</button>
+    </div>
+  </header>
+
+  <p class="avertissement" id="avertissement" hidden></p>
+
+  <!-- Écran : chargement -->
+  <section id="ecran-chargement" class="bloc">
+    <p class="note">Ouverture du cahier…</p>
+  </section>
+
+  <!-- Écran : choix de l'élève -->
+  <section id="ecran-profils" hidden>
+    <div class="bloc">
+      <div>
+        <p class="etiquette">Bienvenue</p>
+        <h2>Qui révise aujourd'hui ?</h2>
+      </div>
+      <div class="profils" id="liste-profils"></div>
+      <form class="champ" id="form-profil" autocomplete="off">
+        <label for="prenom">Nouveau cahier : écris ton prénom</label>
+        <div class="rangee">
+          <input class="saisie" id="prenom" name="prenom" maxlength="24" placeholder="Par exemple : Léa" style="flex:1;min-width:0">
+          <button class="btn btn-principal" type="submit" style="font-size:1.1rem">Créer</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Écran : tableau de bord -->
+  <section id="ecran-tableau" hidden>
+    <div class="page" style="padding:0">
+      <div>
+        <p class="etiquette">Tables de multiplication</p>
+        <h2 id="bonjour"></h2>
+      </div>
+      <div class="chiffres" id="chiffres"></div>
+
+      <div class="bloc" id="bloc-seance">
+        <div class="bloc-tete">
+          <h2>Nouvelle séance</h2>
+          <label class="case"><input type="checkbox" id="melange"> Mélanger l'ordre (7 × 3 ou 3 × 7)</label>
+        </div>
+        <div class="champ">
+          <span class="etiquette">Sujet</span>
+          <div class="segments" id="sujets"><button type="button" aria-pressed="true">Tables de multiplication</button></div>
+        </div>
+        <div class="champ">
+          <div class="bloc-tete">
+            <span class="etiquette">Quelles tables ?</span>
+            <div class="raccourcis">
+              <button type="button" data-tables="2-5">2 à 5</button>
+              <button type="button" data-tables="6-9">6 à 9</button>
+              <button type="button" data-tables="2-10">2 à 10</button>
+              <button type="button" data-tables="1-12">Toutes</button>
+            </div>
+          </div>
+          <div class="choix-tables" id="choix-tables"></div>
+        </div>
+        <div class="champ">
+          <span class="etiquette">Façon de jouer</span>
+          <div class="modes" id="modes">
+            <button type="button" class="mode" data-mode="entrainement"><strong>Entraînement</strong><span>Des multiplications au hasard dans les tables choisies.</span></button>
+            <button type="button" class="mode" data-mode="faibles"><strong>Points faibles</strong><span>Les calculs qui te posent le plus de problèmes.</span></button>
+            <button type="button" class="mode" data-mode="chrono"><strong>Contre la montre</strong><span>Un maximum de bonnes réponses en 1 minute.</span></button>
+          </div>
+        </div>
+        <div class="rangee" style="justify-content:space-between">
+          <div class="champ" id="champ-nombre">
+            <span class="etiquette">Nombre de questions</span>
+            <div class="segments" id="nombres">
+              <button type="button" data-nb="10">10</button>
+              <button type="button" data-nb="20">20</button>
+              <button type="button" data-nb="30">30</button>
+            </div>
+          </div>
+          <button class="btn btn-principal" type="button" id="demarrer">C'est parti !</button>
+        </div>
+        <p class="note" id="info-seance" hidden></p>
+      </div>
+
+      <div class="grille-2">
+        <div class="bloc">
+          <div class="bloc-tete">
+            <h2>Ma table de Pythagore</h2>
+          </div>
+          <p class="note">Chaque case est un calcul : elle devient verte quand tu le réussis plusieurs fois de suite.</p>
+          <div class="pytha-boite"><table class="pytha" id="pytha"></table></div>
+          <div class="legende">
+            <span><i style="background:var(--papier);border:1px dashed var(--trait)"></i>Pas encore vu</span>
+            <span><i style="background:var(--rouge)"></i>Difficile</span>
+            <span><i style="background:color-mix(in srgb, var(--vert) 42%, var(--surface))"></i>En progrès</span>
+            <span><i style="background:var(--vert)"></i>Maîtrisé</span>
+          </div>
+        </div>
+        <div style="display:grid;gap:18px;min-width:0">
+          <div class="bloc">
+            <div class="bloc-tete">
+              <h2>À retravailler</h2>
+              <span class="note">taux de réussite</span>
+            </div>
+            <div id="faibles"></div>
+          </div>
+          <div class="bloc">
+            <div class="bloc-tete">
+              <h2>Ma progression</h2>
+              <span class="note" id="note-progression"></span>
+            </div>
+            <div id="progression"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bloc">
+        <div class="bloc-tete">
+          <h2>Mes succès</h2>
+          <span class="note" id="compte-succes"></span>
+        </div>
+        <div class="succes-grille" id="succes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Écran : questions -->
+  <section id="ecran-quiz" hidden>
+    <div class="quiz">
+      <div class="quiz-haut">
+        <button class="btn" type="button" id="arreter">Arrêter</button>
+        <div class="progres" id="barre-progres"><i></i></div>
+        <span class="compteur" id="compteur"></span>
+      </div>
+      <div class="rangee" style="justify-content:center;gap:18px">
+        <span class="chrono" id="chrono" hidden></span>
+        <span class="serie" id="serie"></span>
+      </div>
+      <div class="ardoise" id="ardoise">
+        <div class="question" id="question" aria-live="polite"></div>
+        <form class="reponse-form" id="form-reponse" autocomplete="off">
+          <label for="reponse" class="etiquette" style="position:absolute;left:-9999px">Ta réponse</label>
+          <input class="reponse" id="reponse" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="go">
+          <button class="btn btn-principal" type="submit" id="valider">Valider</button>
+        </form>
+        <div class="retour" id="retour" aria-live="assertive"></div>
+      </div>
+      <p class="note">Tape ta réponse puis appuie sur Entrée.</p>
+    </div>
+  </section>
+
+  <!-- Écran : bilan -->
+  <section id="ecran-bilan" hidden>
+    <div class="bloc quiz">
+      <p class="etiquette" id="bilan-titre">Bilan de la séance</p>
+      <div class="score" id="bilan-score"></div>
+      <h2 id="bilan-message"></h2>
+      <p class="note" id="bilan-detail"></p>
+      <div class="nouveaux" id="bilan-succes"></div>
+      <div id="bilan-erreurs-boite" style="display:grid;gap:8px;justify-items:center;width:100%">
+        <h3>Les calculs à retenir</h3>
+        <ul class="erreurs" id="bilan-erreurs"></ul>
+      </div>
+      <div class="rangee" style="justify-content:center">
+        <button class="btn btn-principal" type="button" id="rejouer-erreurs">Retravailler mes erreurs</button>
+        <button class="btn" type="button" id="rejouer">Recommencer</button>
+        <button class="btn" type="button" id="retour-tableau">Retour au cahier</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="bulles" id="bulles" aria-live="polite"></div>
+<canvas id="confettis" aria-hidden="true"></canvas>
+
+<script>
+"use strict";
+// ---------------------------------------------------------------------------
+// Données et réglages
+// ---------------------------------------------------------------------------
+const TABLES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+const FACTEURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const MAITRISE = 3;           // réussites d'affilée pour qu'un calcul soit « maîtrisé »
+const ECLAIR_MS = 2000;       // réponse « éclair »
+const DUREE_CHRONO = 60000;
+const CLE_LOCALE = "cahier-revisions-v1";
+const SUJET = "multiplications";
+
+const cle = (t, m) => t + "x" + m;
+const lireCle = k => k.split("x").map(Number);
+const jourDuJour = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const $ = s => document.querySelector(s);
+const clone = o => JSON.parse(JSON.stringify(o));
+const pourcent = (b, v) => v ? Math.round(100 * b / v) : 0;
+const slug = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+
+function nouvelEleve(prenom) {
+  return {
+    prenom, cree: Date.now(), maj: Date.now(),
+    reglages: { tables: [2, 3, 4, 5], nb: 10, mode: "entrainement", melange: true },
+    compteurs: { bonnes: 0, reponses: 0, serie: 0, serieMax: 0, seances: 0, sansFaute: 0, courage: 0, faibles: 0, eclairs: 0, revanches: 0, chronoRecord: 0, jours: [] },
+    succes: {},
+    sujets: { [SUJET]: { faits: {}, seances: [] } },
+  };
+}
+// Complète un cahier ancien ou incomplet avec les champs manquants.
+function completer(e) {
+  const base = nouvelEleve(e.prenom || "?");
+  e.reglages = Object.assign(base.reglages, e.reglages || {});
+  e.compteurs = Object.assign(base.compteurs, e.compteurs || {});
+  e.succes = e.succes || {};
+  e.sujets = e.sujets || {};
+  e.sujets[SUJET] = Object.assign({ faits: {}, seances: [] }, e.sujets[SUJET] || {});
+  return e;
+}
+
+// ---------------------------------------------------------------------------
+// Succès
+// ---------------------------------------------------------------------------
+function tableMaitrisee(faits, t) {
+  return FACTEURS.every(m => (faits[cle(t, m)]?.n || 0) >= MAITRISE);
+}
+const SUCCES = [
+  { id: "premier_pas", nom: "Premier pas", desc: "Donner sa première bonne réponse", sym: "1", test: c => c.bonnes >= 1 },
+  { id: "serie_5", nom: "Bien lancé", desc: "5 bonnes réponses d'affilée", sym: "×5", test: c => c.serieMax >= 5 },
+  { id: "serie_10", nom: "En feu", desc: "10 bonnes réponses d'affilée", sym: "×10", test: c => c.serieMax >= 10 },
+  { id: "serie_25", nom: "Inarrêtable", desc: "25 bonnes réponses d'affilée", sym: "×25", test: c => c.serieMax >= 25 },
+  { id: "serie_50", nom: "Mur de briques", desc: "50 bonnes réponses d'affilée", sym: "×50", test: c => c.serieMax >= 50 },
+  { id: "sans_faute", nom: "Sans faute", desc: "Finir une séance d'au moins 10 questions sans erreur", sym: "10/10", test: c => c.sansFaute >= 1 },
+  { id: "sans_faute_5", nom: "Perfectionniste", desc: "Finir 5 séances sans faute", sym: "5 ★", test: c => c.sansFaute >= 5 },
+  { id: "eclair", nom: "Éclair", desc: "Trouver une bonne réponse en moins de 2 secondes", sym: "2 s", test: c => c.eclairs >= 1 },
+  { id: "eclair_50", nom: "Réflexes de champion", desc: "50 bonnes réponses en moins de 2 secondes", sym: "50 ×", test: c => c.eclairs >= 50 },
+  { id: "chrono_15", nom: "Contre la montre", desc: "15 bonnes réponses en 1 minute", sym: "15", test: c => c.chronoRecord >= 15 },
+  { id: "chrono_25", nom: "Fusée", desc: "25 bonnes réponses en 1 minute", sym: "25", test: c => c.chronoRecord >= 25 },
+  { id: "chrono_35", nom: "Vitesse lumière", desc: "35 bonnes réponses en 1 minute", sym: "35", test: c => c.chronoRecord >= 35 },
+  { id: "bonnes_50", nom: "Cinquantaine", desc: "50 bonnes réponses en tout", sym: "50", test: c => c.bonnes >= 50 },
+  { id: "bonnes_200", nom: "Calculateur", desc: "200 bonnes réponses en tout", sym: "200", test: c => c.bonnes >= 200 },
+  { id: "bonnes_500", nom: "Super calculateur", desc: "500 bonnes réponses en tout", sym: "500", test: c => c.bonnes >= 500 },
+  { id: "bonnes_1000", nom: "Machine à calculer", desc: "1 000 bonnes réponses en tout", sym: "1000", test: c => c.bonnes >= 1000 },
+  { id: "seances_5", nom: "Assidu", desc: "Terminer 5 séances", sym: "5", test: c => c.seances >= 5 },
+  { id: "seances_20", nom: "Infatigable", desc: "Terminer 20 séances", sym: "20", test: c => c.seances >= 20 },
+  { id: "seances_50", nom: "Marathonien", desc: "Terminer 50 séances", sym: "50", test: c => c.seances >= 50 },
+  { id: "jours_3", nom: "Régulier", desc: "Réviser 3 jours différents", sym: "3 j", test: c => c.jours.length >= 3 },
+  { id: "jours_7", nom: "Une semaine entière", desc: "Réviser 7 jours différents", sym: "7 j", test: c => c.jours.length >= 7 },
+  { id: "jours_30", nom: "Habitué", desc: "Réviser 30 jours différents", sym: "30 j", test: c => c.jours.length >= 30 },
+  { id: "revanche", nom: "Revanche", desc: "Réussir 3 fois de suite un calcul qu'on avait raté", sym: "↺", test: c => c.revanches >= 1 },
+  { id: "revanche_10", nom: "Rien ne me résiste", desc: "Prendre sa revanche sur 10 calculs", sym: "↺10", test: c => c.revanches >= 10 },
+  { id: "courage", nom: "Courage", desc: "Terminer une séance malgré 3 erreurs ou plus", sym: "♥", test: c => c.courage >= 1 },
+  { id: "faibles", nom: "Chasseur de pièges", desc: "Terminer une séance « Points faibles »", sym: "?!", test: c => c.faibles >= 1 },
+  ...TABLES.map(t => ({ id: "table_" + t, nom: "Maître de la table de " + t, desc: "Réussir chaque calcul de la table de " + t + " 3 fois de suite", sym: "×" + t, test: (c, f) => tableMaitrisee(f, t) })),
+  { id: "tables_2_10", nom: "Grand maître", desc: "Maîtriser toutes les tables de 2 à 10", sym: "★", test: (c, f) => [2, 3, 4, 5, 6, 7, 8, 9, 10].every(t => tableMaitrisee(f, t)) },
+  { id: "tables_toutes", nom: "Légende des tables", desc: "Maîtriser toutes les tables de 1 à 12", sym: "★★", test: (c, f) => TABLES.every(t => tableMaitrisee(f, t)) },
+];
+
+/** Débloque les succès atteints ; renvoie la liste des nouveaux. */
+function verifierSucces() {
+  const nouveaux = [];
+  const faits = eleve.sujets[SUJET].faits;
+  for (const s of SUCCES) {
+    if (!eleve.succes[s.id] && s.test(eleve.compteurs, faits)) {
+      eleve.succes[s.id] = Date.now();
+      nouveaux.push(s);
+    }
+  }
+  return nouveaux;
+}
+
+// ---------------------------------------------------------------------------
+// Sauvegarde : base de l'artefact si disponible, sinon navigateur
+// ---------------------------------------------------------------------------
+const Stockage = {
+  db: null,
+  enLigne: false,
+  file: Promise.resolve(),
+  minuteur: null,
+  async init() {
+    if (window.claude && typeof window.claude.use === "function") {
+      try { this.db = await window.claude.use("db"); } catch (e) { this.db = null; }
+    }
+    this.enLigne = !!this.db;
+  },
+  lireLocal() {
+    try { return JSON.parse(localStorage.getItem(CLE_LOCALE) || "{}") || {}; } catch (e) { return {}; }
+  },
+  ecrireLocal() {
+    try { localStorage.setItem(CLE_LOCALE, JSON.stringify(eleves)); } catch (e) { /* stockage indisponible */ }
+  },
+  async charger() {
+    const tous = this.lireLocal();
+    if (this.db) {
+      try {
+        const snap = await this.db.collection("eleves").get();
+        for (const d of snap.docs) {
+          const data = d.data();
+          if (data && (!tous[d.id] || (data.maj || 0) >= (tous[d.id].maj || 0))) tous[d.id] = clone(data);
+        }
+      } catch (e) {
+        this.enLigne = false;
+        avertir("Le cahier en ligne ne répond pas : la progression est gardée sur cet appareil.");
+      }
+    }
+    for (const k of Object.keys(tous)) completer(tous[k]);
+    return tous;
+  },
+  /** Enregistre l'élève courant (regroupe les écritures rapprochées). */
+  sauver(immediat) {
+    if (!eleve) return;
+    eleve.maj = Date.now();
+    this.ecrireLocal();
+    if (!this.enLigne) return;
+    clearTimeout(this.minuteur);
+    const id = eleve.id;
+    const envoyer = () => {
+      const donnees = clone(eleves[id]);
+      this.file = this.file.then(() => this.db.doc("eleves/" + id).set(donnees)).catch(e => {
+        if (e && (e.code === "invalid_argument" || e.code === "permission_denied")) {
+          this.enLigne = false;
+          avertir("Ce cahier ne peut pas être enregistré en ligne : la progression est gardée sur cet appareil.");
+        }
+      });
+    };
+    if (immediat) envoyer(); else this.minuteur = setTimeout(envoyer, 1500);
+  },
+};
+function avertir(texte) { const a = $("#avertissement"); a.textContent = texte; a.hidden = false; }
+
+// ---------------------------------------------------------------------------
+// État
+// ---------------------------------------------------------------------------
+let eleves = {};
+let eleve = null;
+let seance = null;
+
+function montrer(ecran) {
+  for (const id of ["chargement", "profils", "tableau", "quiz", "bilan"]) $("#ecran-" + id).hidden = id !== ecran;
+  $("#puce-eleve").hidden = !eleve || ecran === "profils" || ecran === "chargement";
+  window.scrollTo(0, 0);
+}
+
+// ---------------------------------------------------------------------------
+// Écran des profils
+// ---------------------------------------------------------------------------
+function afficherProfils() {
+  const liste = $("#liste-profils");
+  liste.textContent = "";
+  const ids = Object.keys(eleves).sort((a, b) => (eleves[b].maj || 0) - (eleves[a].maj || 0));
+  if (!ids.length) {
+    const v = document.createElement("p");
+    v.className = "vide";
+    v.textContent = "Aucun cahier pour l'instant. Crée le tien juste en dessous.";
+    liste.append(v);
+  }
+  for (const id of ids) {
+    const e = eleves[id];
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "carte-profil";
+    const s = document.createElement("strong"); s.textContent = e.prenom;
+    const nbSucces = Object.keys(e.succes).length;
+    const i = document.createElement("span");
+    i.textContent = e.compteurs.reponses
+      ? pourcent(e.compteurs.bonnes, e.compteurs.reponses) + " % de réussite · " + nbSucces + " succès"
+      : "Cahier tout neuf";
+    b.append(s, i);
+    b.addEventListener("click", () => ouvrirEleve(id));
+    liste.append(b);
+  }
+  montrer("profils");
+  $("#prenom").value = "";
+}
+$("#form-profil").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const prenom = $("#prenom").value.trim().replace(/\s+/g, " ");
+  const id = slug(prenom);
+  if (!id) { $("#prenom").focus(); return; }
+  if (!eleves[id]) eleves[id] = nouvelEleve(prenom);
+  ouvrirEleve(id);
+  Stockage.sauver(true);
+});
+$("#changer-eleve").addEventListener("click", () => { eleve = null; afficherProfils(); });
+
+function ouvrirEleve(id) {
+  eleve = eleves[id];
+  eleve.id = id;
+  $("#nom-eleve").textContent = eleve.prenom;
+  afficherTableau();
+}
+
+// ---------------------------------------------------------------------------
+// Tableau de bord
+// ---------------------------------------------------------------------------
+function afficherTableau() {
+  const c = eleve.compteurs;
+  const sujet = eleve.sujets[SUJET];
+  $("#bonjour").textContent = "Bonjour " + eleve.prenom + " !";
+
+  // Chiffres clés
+  const maitrises = Object.values(sujet.faits).filter(f => f.n >= MAITRISE).length;
+  const chiffres = [
+    [c.reponses ? pourcent(c.bonnes, c.reponses) + " %" : "–", "de réussite"],
+    [c.bonnes, "bonnes réponses"],
+    [maitrises + " / " + TABLES.length * FACTEURS.length, "calculs maîtrisés"],
+    [c.serieMax, "record d'affilée"],
+    [Object.keys(eleve.succes).length + " / " + SUCCES.length, "succès"],
+  ];
+  const zone = $("#chiffres");
+  zone.textContent = "";
+  for (const [val, lib] of chiffres) {
+    const d = document.createElement("div"); d.className = "chiffre";
+    const s = document.createElement("span"); s.textContent = lib;
+    const b = document.createElement("b"); b.textContent = val;
+    d.append(b, s); zone.append(d);
+  }
+
+  afficherReglages();
+  afficherPythagore();
+  afficherFaibles();
+  afficherProgression();
+  afficherSucces();
+  montrer("tableau");
+}
+
+function afficherReglages() {
+  const r = eleve.reglages;
+  const zone = $("#choix-tables");
+  zone.textContent = "";
+  for (const t of TABLES) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "puce"; b.textContent = t;
+    b.setAttribute("aria-pressed", r.tables.includes(t));
+    b.setAttribute("aria-label", "Table de " + t);
+    b.addEventListener("click", () => {
+      r.tables = r.tables.includes(t) ? r.tables.filter(x => x !== t) : [...r.tables, t].sort((a, b) => a - b);
+      afficherReglages(); Stockage.sauver();
+    });
+    zone.append(b);
+  }
+  for (const b of document.querySelectorAll("#modes .mode")) b.setAttribute("aria-pressed", b.dataset.mode === r.mode);
+  for (const b of document.querySelectorAll("#nombres button")) b.setAttribute("aria-pressed", Number(b.dataset.nb) === r.nb);
+  $("#champ-nombre").hidden = r.mode === "chrono";
+  $("#melange").checked = r.melange;
+
+  const info = $("#info-seance");
+  let message = "";
+  if (r.mode === "faibles" && !faitsFaibles(1).length) message = "Pas encore de point faible repéré : la séance portera sur les tables choisies.";
+  else if (r.mode !== "faibles" && !r.tables.length) message = "Choisis au moins une table.";
+  info.textContent = message; info.hidden = !message;
+  $("#demarrer").disabled = r.mode !== "faibles" && !r.tables.length;
+}
+for (const b of document.querySelectorAll(".raccourcis button")) {
+  b.addEventListener("click", () => {
+    const [a, z] = b.dataset.tables.split("-").map(Number);
+    eleve.reglages.tables = TABLES.filter(t => t >= a && t <= z);
+    afficherReglages(); Stockage.sauver();
+  });
+}
+for (const b of document.querySelectorAll("#modes .mode")) {
+  b.addEventListener("click", () => { eleve.reglages.mode = b.dataset.mode; afficherReglages(); Stockage.sauver(); });
+}
+for (const b of document.querySelectorAll("#nombres button")) {
+  b.addEventListener("click", () => { eleve.reglages.nb = Number(b.dataset.nb); afficherReglages(); Stockage.sauver(); });
+}
+$("#melange").addEventListener("change", ev => { eleve.reglages.melange = ev.target.checked; Stockage.sauver(); });
+
+/** Classe d'une case selon l'historique du calcul. */
+function etatFait(f) {
+  if (!f || !f.v) return "";
+  const taux = f.b / f.v;
+  if (f.n >= 1) return "n" + Math.min(f.n, 5);
+  return taux < 0.5 ? "difficile" : "fragile";
+}
+function afficherPythagore() {
+  const faits = eleve.sujets[SUJET].faits;
+  const table = $("#pytha");
+  table.textContent = "";
+  const tete = document.createElement("tr");
+  const coin = document.createElement("th"); coin.textContent = "×"; tete.append(coin);
+  for (const m of FACTEURS) { const th = document.createElement("th"); th.textContent = m; tete.append(th); }
+  table.append(tete);
+  for (const t of TABLES) {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th"); th.textContent = t; th.scope = "row"; tr.append(th);
+    for (const m of FACTEURS) {
+      const f = faits[cle(t, m)];
+      const td = document.createElement("td");
+      td.className = etatFait(f);
+      td.textContent = f && f.v ? t * m : "";
+      td.title = t + " × " + m + " = " + (t * m) + (f && f.v ? " · réussi " + f.b + " fois sur " + f.v : " · pas encore vu");
+      tr.append(td);
+    }
+    table.append(tr);
+  }
+}
+
+/** Calculs déjà vus mais pas encore maîtrisés, du plus fragile au moins fragile. */
+function faitsFaibles(n) {
+  const faits = eleve.sujets[SUJET].faits;
+  return Object.entries(faits)
+    .filter(([, f]) => f.v > 0 && f.n < MAITRISE && f.v > f.b)
+    .map(([k, f]) => ({ cle: k, f, score: (1 - (f.b + 1) / (f.v + 2)) + (MAITRISE - f.n) * 0.15 }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, n);
+}
+function afficherFaibles() {
+  const zone = $("#faibles");
+  zone.textContent = "";
+  const liste = faitsFaibles(6);
+  if (!liste.length) {
+    const p = document.createElement("p"); p.className = "vide";
+    p.textContent = eleve.compteurs.reponses ? "Rien à signaler : aucun calcul ne te pose problème pour l'instant." : "Les calculs difficiles apparaîtront ici après ta première séance.";
+    zone.append(p); return;
+  }
+  const ul = document.createElement("ul"); ul.className = "liste-faibles";
+  for (const { cle: k, f } of liste) {
+    const [t, m] = lireCle(k);
+    const li = document.createElement("li");
+    const calc = document.createElement("span"); calc.className = "calc"; calc.textContent = t + " × " + m + " = " + t * m;
+    const jauge = document.createElement("div"); jauge.className = "jauge";
+    const i = document.createElement("i"); i.style.width = Math.max(4, pourcent(f.b, f.v)) + "%"; jauge.append(i);
+    const pct = document.createElement("span"); pct.className = "pct"; pct.textContent = pourcent(f.b, f.v) + " %";
+    li.append(calc, jauge, pct); ul.append(li);
+  }
+  zone.append(ul);
+}
+
+function afficherProgression() {
+  const zone = $("#progression");
+  zone.textContent = "";
+  const seances = eleve.sujets[SUJET].seances.filter(s => s.total > 0 && s.mode !== "chrono").slice(-15);
+  $("#note-progression").textContent = seances.length ? "réussite des " + seances.length + " dernières séances" : "";
+  if (!seances.length) {
+    const p = document.createElement("p"); p.className = "vide";
+    p.textContent = "Ta courbe de progression se dessinera au fil des séances.";
+    zone.append(p); return;
+  }
+  const L = 600, H = 200, g = 34, bas = 24, haut = 10;
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("class", "graphe");
+  svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Pourcentage de réussite par séance");
+  const y = p => haut + (H - haut - bas) * (1 - p / 100);
+  for (const p of [0, 50, 100]) {
+    const l = document.createElementNS(ns, "line");
+    l.setAttribute("x1", g); l.setAttribute("x2", L); l.setAttribute("y1", y(p)); l.setAttribute("y2", y(p)); l.setAttribute("class", "axe");
+    const t = document.createElementNS(ns, "text");
+    t.setAttribute("x", g - 6); t.setAttribute("y", y(p) + 4); t.setAttribute("text-anchor", "end"); t.setAttribute("class", "txt");
+    t.textContent = p + " %";
+    svg.append(l, t);
+  }
+  const pas = (L - g) / 15;
+  seances.forEach((s, i) => {
+    const p = pourcent(s.bons, s.total);
+    const r = document.createElementNS(ns, "rect");
+    const x = g + i * pas + pas * 0.18;
+    r.setAttribute("x", x); r.setAttribute("width", pas * 0.64);
+    r.setAttribute("y", y(Math.max(p, 2))); r.setAttribute("height", y(0) - y(Math.max(p, 2)));
+    r.setAttribute("rx", 4);
+    r.setAttribute("class", "barre" + (p >= 90 ? " top" : p < 50 ? " bas" : ""));
+    const titre = document.createElementNS(ns, "title");
+    const d = new Date(s.date);
+    titre.textContent = d.toLocaleDateString("fr-FR") + " : " + s.bons + " / " + s.total + " (" + p + " %)";
+    r.append(titre);
+    svg.append(r);
+    if (i === 0 || i === seances.length - 1 || i % 3 === 0) {
+      const t = document.createElementNS(ns, "text");
+      t.setAttribute("x", x + pas * 0.32); t.setAttribute("y", H - 6); t.setAttribute("text-anchor", "middle"); t.setAttribute("class", "txt");
+      t.textContent = d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+      svg.append(t);
+    }
+  });
+  zone.append(svg);
+}
+
+function carteSucces(s, obtenu) {
+  const d = document.createElement("div");
+  d.className = "succes" + (obtenu ? " obtenu" : "");
+  const m = document.createElement("div"); m.className = "medaille"; m.textContent = s.sym;
+  const t = document.createElement("div");
+  const n = document.createElement("strong"); n.textContent = s.nom;
+  const p = document.createElement("span"); p.textContent = s.desc;
+  t.append(n, p); d.append(m, t);
+  return d;
+}
+function afficherSucces() {
+  const zone = $("#succes");
+  zone.textContent = "";
+  const obtenus = SUCCES.filter(s => eleve.succes[s.id]).sort((a, b) => eleve.succes[b.id] - eleve.succes[a.id]);
+  const restants = SUCCES.filter(s => !eleve.succes[s.id]);
+  for (const s of obtenus) zone.append(carteSucces(s, true));
+  for (const s of restants) zone.append(carteSucces(s, false));
+  $("#compte-succes").textContent = obtenus.length + " sur " + SUCCES.length;
+}
+
+// ---------------------------------------------------------------------------
+// Séance de questions
+// ---------------------------------------------------------------------------
+function demarrer(mode, poolForce) {
+  const r = eleve.reglages;
+  let pool = poolForce;
+  if (!pool && mode === "faibles") pool = faitsFaibles(12).map(x => x.cle);
+  if (!pool || !pool.length) pool = r.tables.flatMap(t => FACTEURS.map(m => cle(t, m)));
+  if (!pool.length) return;
+  const total = mode === "chrono" ? Infinity
+    : mode === "erreurs" ? Math.max(6, pool.length * 2)
+    : r.nb;
+  seance = {
+    mode, pool, total, faites: 0, bons: 0, erreurs: [], debut: Date.now(),
+    fin: mode === "chrono" ? Date.now() + DUREE_CHRONO : null,
+    q: null, attente: false, minuteur: null, horloge: null, nouveaux: [],
+  };
+  $("#chrono").hidden = mode !== "chrono";
+  $("#barre-progres").hidden = mode === "chrono";
+  montrer("quiz");
+  if (mode === "chrono") {
+    seance.horloge = setInterval(tictac, 200);
+    tictac();
+  }
+  questionSuivante();
+}
+
+/** Tirage pondéré : les calculs fragiles ou jamais vus sortent plus souvent. */
+function tirer() {
+  const faits = eleve.sujets[SUJET].faits;
+  const precedente = seance.q?.cle;
+  const candidats = seance.pool.length > 1 ? seance.pool.filter(k => k !== precedente) : seance.pool;
+  const poids = candidats.map(k => {
+    const f = faits[k];
+    if (!f || !f.v) return 1.6;
+    return 1 + (MAITRISE - Math.min(f.n, MAITRISE)) * 0.7 + (f.v - f.b) / (f.v + 1);
+  });
+  let r = Math.random() * poids.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < candidats.length; i++) { r -= poids[i]; if (r <= 0) return candidats[i]; }
+  return candidats[candidats.length - 1];
+}
+
+function questionSuivante() {
+  clearTimeout(seance.minuteur);
+  if (seance.faites >= seance.total) { terminer(false); return; }
+  const k = tirer();
+  const [t, m] = lireCle(k);
+  const inverse = eleve.reglages.melange && Math.random() < 0.5;
+  seance.q = { cle: k, a: inverse ? m : t, b: inverse ? t : m, res: t * m, t0: Date.now() };
+  seance.attente = false;
+  const q = $("#question");
+  q.innerHTML = "";
+  const sa = document.createElement("span"); sa.textContent = seance.q.a;
+  const op = document.createElement("span"); op.className = "op"; op.textContent = "×";
+  const sb = document.createElement("span"); sb.textContent = seance.q.b;
+  q.append(sa, op, sb);
+  const champ = $("#reponse");
+  champ.value = ""; champ.readOnly = false; champ.className = "reponse";
+  $("#retour").textContent = ""; $("#retour").className = "retour";
+  $("#valider").textContent = "Valider";
+  afficherAvancement();
+  champ.focus();
+}
+
+function afficherAvancement() {
+  const s = seance;
+  $("#compteur").textContent = s.mode === "chrono" ? s.bons + " bonnes" : Math.min(s.faites + 1, s.total) + " / " + s.total;
+  $("#barre-progres i").style.width = s.mode === "chrono" ? "0" : (100 * s.faites / s.total) + "%";
+  const serie = eleve.compteurs.serie;
+  const el = $("#serie");
+  el.textContent = serie >= 3 ? serie + " bonnes réponses d'affilée !" : "";
+  el.classList.toggle("chaude", serie >= 10);
+}
+
+function tictac() {
+  const reste = Math.max(0, seance.fin - Date.now());
+  const el = $("#chrono");
+  el.textContent = Math.ceil(reste / 1000) + " s";
+  el.classList.toggle("urgent", reste < 10000);
+  if (reste <= 0) terminer(false);
+}
+
+$("#form-reponse").addEventListener("submit", ev => {
+  ev.preventDefault();
+  if (!seance) return;
+  if (seance.attente) { questionSuivante(); return; }
+  const brut = $("#reponse").value.trim();
+  if (!/^\d+$/.test(brut)) { $("#reponse").focus(); return; }
+  repondre(parseInt(brut, 10));
+});
+$("#reponse").addEventListener("input", ev => { ev.target.value = ev.target.value.replace(/\D/g, ""); });
+
+function repondre(valeur) {
+  const s = seance, q = s.q;
+  const ok = valeur === q.res;
+  const duree = Date.now() - q.t0;
+  enregistrer(q.cle, ok, duree);
+  s.faites++;
+  const champ = $("#reponse"), retour = $("#retour"), ardoise = $("#ardoise");
+  champ.readOnly = true;
+  s.attente = true;
+  ardoise.classList.remove("secoue", "bondit");
+  void ardoise.offsetWidth;
+  if (ok) {
+    s.bons++;
+    champ.classList.add("juste");
+    ardoise.classList.add("bondit");
+    retour.className = "retour juste";
+    retour.textContent = duree < ECLAIR_MS ? "Éclair ! Bravo !" : ["Bravo !", "Exact !", "Super !", "Bien joué !", "Parfait !"][Math.floor(Math.random() * 5)];
+    s.minuteur = setTimeout(questionSuivante, 650);
+  } else {
+    s.erreurs.push({ cle: q.cle, a: q.a, b: q.b, res: q.res, donne: valeur });
+    champ.classList.add("faux");
+    ardoise.classList.add("secoue");
+    retour.className = "retour faux";
+    retour.textContent = "Pas tout à fait…";
+    const c = document.createElement("span"); c.className = "correction";
+    c.textContent = q.a + " × " + q.b + " = " + q.res;
+    retour.append(c);
+    $("#valider").textContent = "Suivant";
+    if (s.mode === "chrono") s.minuteur = setTimeout(questionSuivante, 1400);
+  }
+  afficherAvancement();
+  const nouveaux = verifierSucces();
+  s.nouveaux.push(...nouveaux);
+  nouveaux.forEach(annoncer);
+  Stockage.sauver();
+}
+
+/** Met à jour l'historique du calcul et les compteurs de l'élève. */
+function enregistrer(k, ok, duree) {
+  const faits = eleve.sujets[SUJET].faits;
+  const f = faits[k] || (faits[k] = { v: 0, b: 0, n: 0, d: 0, rate: false });
+  const c = eleve.compteurs;
+  f.v++; f.d = Date.now();
+  c.reponses++;
+  const jour = jourDuJour();
+  if (!c.jours.includes(jour)) c.jours.push(jour);
+  if (ok) {
+    f.b++; f.n = Math.min(5, f.n + 1);
+    c.bonnes++; c.serie++; c.serieMax = Math.max(c.serieMax, c.serie);
+    if (duree < ECLAIR_MS) c.eclairs++;
+    if (f.rate && f.n >= MAITRISE) { c.revanches++; f.rate = false; }
+  } else {
+    f.n = 0; f.rate = true;
+    c.serie = 0;
+  }
+}
+
+function arreterHorloges() {
+  if (!seance) return;
+  clearTimeout(seance.minuteur);
+  clearInterval(seance.horloge);
+}
+
+function terminer(abandon) {
+  const s = seance;
+  if (!s || s.fini) return;
+  s.fini = true;
+  arreterHorloges();
+  const c = eleve.compteurs;
+  const sujet = eleve.sujets[SUJET];
+  if (s.faites > 0) {
+    sujet.seances.push({ date: Date.now(), mode: s.mode, tables: eleve.reglages.tables.slice(), total: s.faites, bons: s.bons, duree: Date.now() - s.debut, abandon });
+    if (sujet.seances.length > 300) sujet.seances.splice(0, sujet.seances.length - 300);
+  }
+  if (!abandon && s.faites > 0) {
+    c.seances++;
+    if (s.faites >= 10 && s.erreurs.length === 0) c.sansFaute++;
+    if (s.erreurs.length >= 3) c.courage++;
+    if (s.mode === "faibles") c.faibles++;
+    if (s.mode === "chrono") c.chronoRecord = Math.max(c.chronoRecord, s.bons);
+  }
+  const nouveaux = verifierSucces();
+  s.nouveaux.push(...nouveaux);
+  nouveaux.forEach(annoncer);
+  Stockage.sauver(true);
+  afficherBilan(abandon);
+}
+$("#arreter").addEventListener("click", () => {
+  if (!seance) return;
+  if (seance.faites === 0) { arreterHorloges(); seance = null; afficherTableau(); return; }
+  terminer(true);
+});
+
+function afficherBilan(abandon) {
+  const s = seance;
+  const p = pourcent(s.bons, s.faites);
+  $("#bilan-titre").textContent = s.mode === "chrono" ? "Contre la montre" : abandon ? "Séance arrêtée" : "Bilan de la séance";
+  const score = $("#bilan-score");
+  score.textContent = s.bons;
+  const petit = document.createElement("small"); petit.textContent = s.mode === "chrono" ? " en 1 minute" : " / " + s.faites;
+  score.append(petit);
+  let message;
+  if (s.mode === "chrono") message = s.bons >= eleve.compteurs.chronoRecord && s.bons > 0 ? "Nouveau record !" : "Record actuel : " + eleve.compteurs.chronoRecord;
+  else if (p === 100) message = "Sans faute, champion !";
+  else if (p >= 80) message = "Très bien joué !";
+  else if (p >= 50) message = "C'est en bonne voie, continue !";
+  else message = "Courage, chaque essai te fait progresser.";
+  $("#bilan-message").textContent = message;
+  const sec = Math.round((Date.now() - s.debut) / 1000);
+  $("#bilan-detail").textContent = p + " % de réussite · " + (sec >= 60 ? Math.floor(sec / 60) + " min " : "") + (sec % 60) + " s";
+
+  const zs = $("#bilan-succes");
+  zs.textContent = "";
+  for (const n of s.nouveaux) zs.append(carteSucces(n, true));
+
+  const ul = $("#bilan-erreurs");
+  ul.textContent = "";
+  const vues = new Set();
+  for (const e of s.erreurs) {
+    if (vues.has(e.cle)) continue;
+    vues.add(e.cle);
+    const li = document.createElement("li");
+    const b = document.createElement("b"); b.textContent = e.a + " × " + e.b + " = " + e.res;
+    const d = document.createElement("span"); d.textContent = "tu as écrit "; const st = document.createElement("s"); st.textContent = e.donne; d.append(st);
+    li.append(b, d); ul.append(li);
+  }
+  $("#bilan-erreurs-boite").hidden = !s.erreurs.length;
+  $("#rejouer-erreurs").hidden = !s.erreurs.length;
+  montrer("bilan");
+  if (!abandon && (p === 100 && s.faites >= 10 || s.nouveaux.length)) confettis();
+}
+$("#rejouer").addEventListener("click", () => demarrer(seance.mode === "erreurs" ? "entrainement" : seance.mode, seance.mode === "erreurs" ? seance.pool : null));
+$("#rejouer-erreurs").addEventListener("click", () => demarrer("erreurs", [...new Set(seance.erreurs.map(e => e.cle))]));
+$("#retour-tableau").addEventListener("click", () => { seance = null; afficherTableau(); });
+$("#demarrer").addEventListener("click", () => demarrer(eleve.reglages.mode));
+
+// ---------------------------------------------------------------------------
+// Annonces et confettis
+// ---------------------------------------------------------------------------
+function annoncer(s) {
+  const b = document.createElement("div"); b.className = "bulle";
+  const m = document.createElement("div"); m.className = "medaille"; m.textContent = s.sym;
+  const t = document.createElement("div");
+  const sm = document.createElement("small"); sm.textContent = "Succès débloqué";
+  const st = document.createElement("strong"); st.textContent = s.nom;
+  t.append(sm, st); b.append(m, t);
+  $("#bulles").append(b);
+  setTimeout(() => b.remove(), 3800);
+}
+
+function confettis() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = $("#confettis"), ctx = cv.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const st = getComputedStyle(document.documentElement);
+  const couleurs = ["--stylo", "--fluo", "--vert", "--rouge"].map(v => st.getPropertyValue(v).trim());
+  const morceaux = Array.from({ length: 120 }, () => ({
+    x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .35,
+    vx: (Math.random() - .5) * 12, vy: -Math.random() * 12 - 4,
+    r: Math.random() * Math.PI, vr: (Math.random() - .5) * .3,
+    c: couleurs[Math.floor(Math.random() * couleurs.length)], w: 6 + Math.random() * 6,
+  }));
+  const debut = performance.now();
+  (function image(t) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const m of morceaux) {
+      m.vy += .35; m.x += m.vx; m.y += m.vy; m.r += m.vr;
+      ctx.save(); ctx.translate(m.x, m.y); ctx.rotate(m.r);
+      ctx.fillStyle = m.c; ctx.fillRect(-m.w / 2, -m.w / 4, m.w, m.w / 2);
+      ctx.restore();
+    }
+    if (t - debut < 2600) requestAnimationFrame(image); else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  })(debut);
+}
+
+// ---------------------------------------------------------------------------
+// Démarrage
+// ---------------------------------------------------------------------------
+(async function demarrage() {
+  await Stockage.init();
+  eleves = await Stockage.charger();
+  if (!Stockage.db) avertir("Progression enregistrée dans ce navigateur, sur cet appareil.");
+  const ids = Object.keys(eleves);
+  if (ids.length === 1) ouvrirEleve(ids[0]); else afficherProfils();
+})();
+</script>
