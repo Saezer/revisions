@@ -1417,6 +1417,7 @@ function repondre(valeur) {
   const duree = Date.now() - q.t0;
   enregistrer(q.cle, ok, duree);
   s.faites++;
+  if (s.mode === "chrono") { repondreChrono(ok, valeur); return; }
   const champ = $("#reponse"), retour = $("#retour"), ardoise = $("#ardoise");
   champ.readOnly = true;
   s.attente = true;
@@ -1450,13 +1451,29 @@ function repondre(valeur) {
     }
     jouerSon("rate");
     $("#valider").textContent = "Suivant";
-    if (s.mode === "chrono") s.minuteur = setTimeout(questionSuivante, retour.querySelector(".meme") ? 2400 : 1400);
   }
   afficherAvancement();
   const nouveaux = verifierSucces();
   s.nouveaux.push(...nouveaux);
   nouveaux.forEach(annoncer);
   Stockage.sauver();
+}
+
+/** Contre la montre : ni animation, ni mème, ni pause. La question suivante arrive tout
+ *  de suite ; une erreur laisse juste la correction en petit. Les succès s'affichent au bilan. */
+function repondreChrono(ok, valeur) {
+  const s = seance, q = s.q;
+  if (ok) s.bons++;
+  else s.erreurs.push({ cle: q.cle, a: q.a, b: q.b, res: q.res, donne: valeur });
+  jouerSon(ok ? "bonne" : "rate");
+  s.nouveaux.push(...verifierSucces());
+  Stockage.sauver();
+  questionSuivante();
+  if (!ok) {
+    const retour = $("#retour");
+    retour.className = "retour faux";
+    retour.textContent = q.a + " × " + q.b + " = " + q.res;
+  }
 }
 
 /** Met à jour l'historique du calcul et les compteurs de l'élève. */
