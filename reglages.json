@@ -1,0 +1,22 @@
+{
+  "tableMin": 1,
+  "tableMax": 9,
+  "facteurMin": 1,
+  "facteurMax": 10,
+  "dureeChrono": 60,
+  "medias": {
+    "images": true,
+    "sons": true,
+    "ageMax": 16,
+    "interdits": [
+      "sexuel",
+      "nsfw"
+    ],
+    "themes": [
+      "chats",
+      "blocs"
+    ],
+    "seuilBonnes": 3,
+    "seuilErreurs": 3
+  }
+}
