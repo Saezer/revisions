@@ -1,7 +1,7 @@
 {
   "prenom": "Luke",
   "cree": 1792833501304,
-  "maj": 1792838104869,
+  "maj": 1792840647331,
   "reglages": {
     "tables": [
       1,
@@ -15,8 +15,9 @@
       9
     ],
     "nb": 20,
-    "mode": "entrainement",
-    "melange": true
+    "mode": "chrono",
+    "melange": true,
+    "vocal": false
   },
   "compteurs": {
     "bonnes": 222,
@@ -30,6 +31,8 @@
     "eclairs": 31,
     "revanches": 3,
     "chronoRecord": 11,
+    "examens": 0,
+    "examensParfaits": 0,
     "jours": [
       "2026-10-24"
     ]
