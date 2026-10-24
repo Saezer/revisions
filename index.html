@@ -312,6 +312,7 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
 .legendes { display: grid; gap: 8px; }
 .legendes strong { display: block; font-size: .9rem; }
 .legendes span { color: var(--doux); font-size: .9rem; }
+.debug { margin: 0; width: 100%; text-align: left; font: .75rem/1.4 ui-monospace, Consolas, monospace; color: var(--doux); white-space: pre-wrap; border-top: 1px dashed var(--trait); padding-top: 8px; }
 .vide { border: 2px dashed var(--trait); border-radius: 12px; padding: 16px; color: var(--doux); text-align: center; }
 .avertissement { background: color-mix(in srgb, var(--fluo) 35%, var(--surface)); border-radius: 10px; padding: 8px 12px; font-size: .9rem; }
 
@@ -416,6 +417,8 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
           <div class="rangee"><span>Tables de</span><select class="saisie mini" id="adm-tmin"></select><span>à</span><select class="saisie mini" id="adm-tmax"></select></div>
           <div class="rangee"><span>Multiplier par</span><select class="saisie mini" id="adm-fmin"></select><span>à</span><select class="saisie mini" id="adm-fmax"></select></div>
           <div class="rangee"><span>Durée du contre la montre</span><select class="saisie mini" id="adm-chrono"></select></div>
+          <h3>Débogage</h3>
+          <label class="case"><input type="checkbox" id="adm-debug"> Mode débug : afficher le poids de chaque opération et enregistrer chaque séance dans <code>debug/</code></label>
           <h3>GIF, mèmes et sons</h3>
           <div class="rangee">
             <label class="case"><input type="checkbox" id="adm-images"> Images et GIF</label>
@@ -578,6 +581,7 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
           <button class="btn" type="button" id="repeter" hidden>Répéter</button>
         </form>
         <div class="retour" id="retour" aria-live="assertive"></div>
+        <pre class="debug" id="debug" hidden></pre>
       </div>
       <p class="note" id="consigne">Tape ta réponse puis appuie sur Entrée.</p>
     </div>
@@ -642,6 +646,8 @@ const REGLAGES_DEFAUT = {
     seuilBonnes: 3,                   // un mème toutes les 3 bonnes réponses d'affilée
     seuilErreurs: 3,                  // un mème d'encouragement toutes les 3 erreurs
   },
+  debug: false,                       // journal détaillé des tirages, enregistré dans debug/
+
 };
 function completerReglages(r) {
   const d = clone(REGLAGES_DEFAUT);
@@ -826,6 +832,15 @@ const Stockage = {
     const depot = await r.json();
     if (depot.permissions && !depot.permissions.push) { this.config = ancien; throw "Ce jeton peut lire le repo mais pas écrire : donne-lui le droit « Contents : Read and write »."; }
     try { localStorage.setItem(CLE_GITHUB, JSON.stringify(config)); } catch (e) { /* à ressaisir au prochain lancement */ }
+  },
+  /** Crée un fichier dans le repo (journal de débug) ; garde une copie locale si l'envoi échoue. */
+  async creerFichier(fichier, data, message) {
+    try { localStorage.setItem("cahier-revisions-dernier-debug", JSON.stringify(data)); } catch (e) { /* copie impossible */ }
+    if (!this.config || this.etat === "refuse") return false;
+    try {
+      const r = await this.api(this.url(fichier), { method: "PUT", body: JSON.stringify({ message, content: versBase64(JSON.stringify(data, null, 1) + "\n"), branch: this.config.branche }) });
+      return r.ok;
+    } catch (e) { return false; }
   },
   oublier() {
     this.config = null;
@@ -1345,10 +1360,11 @@ function demarrer(mode, poolForce) {
     fin: mode === "chrono" ? Date.now() + reglages.dureeChrono * 1000 : null,
     erreursDepuisMeme: 0,
     vocal: !!eleve.reglages.vocal && voixPossible,
-    q: null, attente: false, minuteur: null, horloge: null, nouveaux: [], poses: {},
+    q: null, attente: false, minuteur: null, horloge: null, nouveaux: [], poses: {}, journal: [],
   };
   $("#chrono").hidden = mode !== "chrono";
   $("#repeter").hidden = !seance.vocal;
+  $("#debug").hidden = true;
   $("#consigne").textContent = (seance.vocal ? "Écoute l'opération (touche R ou « Répéter » pour réentendre). " : "")
     + (mode === "chrono" ? "Tape la bonne réponse : la suivante arrive toute seule. Entrée pour valider une réponse." : "Tape ta réponse puis appuie sur Entrée.");
   $("#barre-progres").hidden = mode === "chrono";
@@ -1365,21 +1381,51 @@ function demarrer(mode, poolForce) {
  *  1. jamais fait (poids 100) ;
  *  2. déjà raté (40 à 85 : plus il est raté souvent, et tant qu'il n'est pas « revanché », plus il sort) ;
  *  3. déjà réussi : le moins vu d'abord (1 à 10), un calcul maîtrisé sort encore moins.
- * Un calcul déjà posé pendant la séance est fortement freiné, pour faire tourner tous les calculs.
+ * Une opération déjà posée pendant la séance (dans un sens ou dans l'autre : 7 × 9 = 9 × 7)
+ * est freinée au point de ne revenir que lorsque toutes les autres ont été posées.
  */
 function poidsCalcul(f, posesSeance) {
   let poids;
   if (!f || !f.v) poids = 100;
   else if (f.v > f.b) poids = 40 + 30 * (f.v - f.b) / f.v + (f.rate ? 15 : 0);
   else poids = (f.n >= MAITRISE ? 0.5 : 1) * (1 + 9 / f.v);
-  return poids / Math.pow(20, posesSeance || 0);
+  return poids / Math.pow(1000, posesSeance || 0);
 }
-/** Tirage pondéré (voir poidsCalcul) ; jamais deux fois de suite le même calcul. */
+/** Mode débug : note le tirage (poids de l'opération choisie et des principales autres). */
+function journaliserTirage(k) {
+  const { candidats, poids } = seance.dernierTirage;
+  const faits = eleve.sujets[SUJET].faits;
+  const total = poids.reduce((a, b) => a + b, 0);
+  const etat = c => { const f = faits[c]; return f ? { vu: f.v, bon: f.b, suite: f.n, rate: f.rate } : { vu: 0 }; };
+  const i = candidats.indexOf(k);
+  const tries = candidats.map((c, j) => [c, poids[j]]).sort((a, b) => b[1] - a[1]);
+  const entree = {
+    n: seance.journal.length + 1,
+    calcul: k, affiche: seance.q.a + "x" + seance.q.b,
+    poids: +poids[i].toFixed(3), probabilite: +(poids[i] / total).toFixed(4),
+    rang: tries.findIndex(([c]) => c === k) + 1,
+    candidats: candidats.length, poidsTotal: +total.toFixed(2),
+    posesAvant: seance.poses[paire(k)] || 0, etat: etat(k),
+    top: tries.slice(0, 8).map(([c, w]) => c + ":" + w.toFixed(2) + " (posé " + (seance.poses[paire(c)] || 0) + ")"),
+  };
+  seance.journal.push(entree);
+  const d = $("#debug");
+  d.hidden = false;
+  d.textContent = "DÉBUG · " + k + " (affiché " + entree.affiche + ") · poids " + entree.poids + " · proba " + (entree.probabilite * 100).toFixed(1) + " % · rang " + entree.rang + "/" + entree.candidats
+    + " · déjà posé " + entree.posesAvant + "× · vu " + (entree.etat.vu || 0) + ", bon " + (entree.etat.bon || 0) + "\nTop : " + entree.top.join(" · ");
+}
+
+/** Clé commune à a × b et b × a : pour l'enfant, c'est la même opération. */
+const paire = k => lireCle(k).sort((x, y) => x - y).join("x");
+
+/** Tirage pondéré (voir poidsCalcul) ; jamais deux fois de suite la même opération. */
 function tirer() {
   const faits = eleve.sujets[SUJET].faits;
-  const precedente = seance.q?.cle;
-  const candidats = seance.pool.length > 1 ? seance.pool.filter(k => k !== precedente) : seance.pool;
-  const poids = candidats.map(k => poidsCalcul(faits[k], seance.poses[k]));
+  const precedente = seance.q ? paire(seance.q.cle) : null;
+  const autres = seance.pool.filter(k => paire(k) !== precedente);
+  const candidats = autres.length ? autres : seance.pool;
+  const poids = candidats.map(k => poidsCalcul(faits[k], seance.poses[paire(k)]));
+  if (reglages.debug) seance.dernierTirage = { candidats, poids };
   let r = Math.random() * poids.reduce((a, b) => a + b, 0);
   for (let i = 0; i < candidats.length; i++) { r -= poids[i]; if (r <= 0) return candidats[i]; }
   return candidats[candidats.length - 1];
@@ -1392,7 +1438,8 @@ function questionSuivante() {
   const [t, m] = lireCle(k);
   const inverse = eleve.reglages.melange && Math.random() < 0.5;
   seance.q = { cle: k, a: inverse ? m : t, b: inverse ? t : m, res: t * m, t0: Date.now() };
-  seance.poses[k] = (seance.poses[k] || 0) + 1;
+  if (reglages.debug) journaliserTirage(k);
+  seance.poses[paire(k)] = (seance.poses[paire(k)] || 0) + 1;
   seance.attente = false;
   afficherOperation(!seance.vocal);
   if (seance.vocal) dire();
@@ -1477,6 +1524,8 @@ function repondre(valeur) {
   const duree = Date.now() - q.t0;
   enregistrer(q.cle, ok, duree);
   s.faites++;
+  const ligne = s.journal[s.journal.length - 1];
+  if (ligne && ligne.calcul === q.cle) Object.assign(ligne, { reponse: valeur, juste: ok, ms: duree });
   if (s.mode === "chrono") { repondreChrono(ok, valeur); return; }
   if (s.vocal) afficherOperation(true);
   const champ = $("#reponse"), retour = $("#retour"), ardoise = $("#ardoise");
@@ -1588,6 +1637,19 @@ function terminer(abandon) {
   nouveaux.forEach(annoncer);
   const libelle = { entrainement: "entraînement", faibles: "points faibles", chrono: "contre la montre", erreurs: "erreurs" }[s.mode] + (s.vocal ? " vocal" : "");
   Stockage.sauver(true, eleve.prenom + " : " + s.bons + "/" + s.faites + " en " + libelle + (s.mode === "faibles" || s.mode === "erreurs" ? "" : " (tables " + eleve.reglages.tables.join(", ") + ")"));
+  if (reglages.debug && s.journal.length) {
+    const d = new Date();
+    const horodatage = d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0") + "-" + String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0") + String(d.getSeconds()).padStart(2, "0");
+    const poses = Object.values(s.poses);
+    Stockage.creerFichier("debug/" + eleve.id + "-" + horodatage + ".json", {
+      profil: eleve.prenom, date: d.toISOString(), mode: s.mode, vocal: s.vocal, abandon,
+      tables: eleve.reglages.tables, melange: eleve.reglages.melange,
+      questions: s.faites, operationsDifferentes: poses.length, operationsReposees: poses.filter(n => n > 1).length,
+      affichagesDifferents: new Set(s.journal.map(l => l.affiche)).size,
+      pool: s.pool.length, reglages: { tableMin: reglages.tableMin, tableMax: reglages.tableMax, facteurMin: reglages.facteurMin, facteurMax: reglages.facteurMax },
+      journal: s.journal,
+    }, "Débug : séance de " + eleve.prenom + " (" + libelle + ", " + s.faites + " questions)");
+  }
   afficherBilan(abandon);
 }
 $("#arreter").addEventListener("click", () => {
@@ -1765,6 +1827,7 @@ function afficherAdmin() {
   $("#adm-images").checked = m.images; $("#adm-sons").checked = m.sons;
   $("#adm-age").value = m.ageMax;
   $("#adm-seuil-bonnes").value = m.seuilBonnes; $("#adm-seuil-erreurs").value = m.seuilErreurs;
+  $("#adm-debug").checked = !!r.debug;
   casesACocher($("#adm-themes"), THEMES, m.themes, "theme");
   casesACocher($("#adm-interdits"), ETIQUETTES, m.interdits, "interdit");
   $("#adm-etat").textContent = "";
@@ -1780,6 +1843,7 @@ function lireAdmin() {
   m.images = $("#adm-images").checked; m.sons = $("#adm-sons").checked;
   m.ageMax = n("#adm-age");
   m.seuilBonnes = n("#adm-seuil-bonnes"); m.seuilErreurs = n("#adm-seuil-erreurs");
+  r.debug = $("#adm-debug").checked;
   m.themes = [...document.querySelectorAll("#adm-themes input:checked")].map(i => i.value);
   m.interdits = [...document.querySelectorAll("#adm-interdits input:checked")].map(i => i.value);
 }

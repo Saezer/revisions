@@ -40,6 +40,10 @@ Profil administrateur et mot de passe (en clair) dans `config.js`. Réglages :
 - **contenus interdits** (par défaut : caractère sexuel, NSFW) ; un média sans âge est traité comme 18 ans et plus ;
 - fréquence des mèmes (par défaut toutes les 3 bonnes réponses d'affilée et toutes les 3 erreurs).
 
+**Mode débug** (case dans l'espace parent) : pendant la séance, une ligne sous l'opération donne son
+poids, sa probabilité et les opérations les plus probables ; à la fin, le journal complet de la séance
+est enregistré dans `debug/<profil>-<date>.json` (opérations posées, poids, réponses, temps).
+
 La **galerie** montre chaque GIF et son avec ses déclencheurs, et indique s'il est autorisé ou bloqué.
 
 ## Quand apparaissent les médias
