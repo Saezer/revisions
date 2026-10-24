@@ -1345,7 +1345,7 @@ function demarrer(mode, poolForce) {
     fin: mode === "chrono" ? Date.now() + reglages.dureeChrono * 1000 : null,
     erreursDepuisMeme: 0,
     vocal: !!eleve.reglages.vocal && voixPossible,
-    q: null, attente: false, minuteur: null, horloge: null, nouveaux: [],
+    q: null, attente: false, minuteur: null, horloge: null, nouveaux: [], poses: {},
   };
   $("#chrono").hidden = mode !== "chrono";
   $("#repeter").hidden = !seance.vocal;
@@ -1360,16 +1360,26 @@ function demarrer(mode, poolForce) {
   questionSuivante();
 }
 
-/** Tirage pondéré : les calculs fragiles ou jamais vus sortent plus souvent. */
+/**
+ * Poids d'un calcul dans le tirage, selon tout l'historique de l'élève, par ordre de priorité :
+ *  1. jamais fait (poids 100) ;
+ *  2. déjà raté (40 à 85 : plus il est raté souvent, et tant qu'il n'est pas « revanché », plus il sort) ;
+ *  3. déjà réussi : le moins vu d'abord (1 à 10), un calcul maîtrisé sort encore moins.
+ * Un calcul déjà posé pendant la séance est fortement freiné, pour faire tourner tous les calculs.
+ */
+function poidsCalcul(f, posesSeance) {
+  let poids;
+  if (!f || !f.v) poids = 100;
+  else if (f.v > f.b) poids = 40 + 30 * (f.v - f.b) / f.v + (f.rate ? 15 : 0);
+  else poids = (f.n >= MAITRISE ? 0.5 : 1) * (1 + 9 / f.v);
+  return poids / Math.pow(20, posesSeance || 0);
+}
+/** Tirage pondéré (voir poidsCalcul) ; jamais deux fois de suite le même calcul. */
 function tirer() {
   const faits = eleve.sujets[SUJET].faits;
   const precedente = seance.q?.cle;
   const candidats = seance.pool.length > 1 ? seance.pool.filter(k => k !== precedente) : seance.pool;
-  const poids = candidats.map(k => {
-    const f = faits[k];
-    if (!f || !f.v) return 1.6;
-    return 1 + (MAITRISE - Math.min(f.n, MAITRISE)) * 0.7 + (f.v - f.b) / (f.v + 1);
-  });
+  const poids = candidats.map(k => poidsCalcul(faits[k], seance.poses[k]));
   let r = Math.random() * poids.reduce((a, b) => a + b, 0);
   for (let i = 0; i < candidats.length; i++) { r -= poids[i]; if (r <= 0) return candidats[i]; }
   return candidats[candidats.length - 1];
@@ -1382,6 +1392,7 @@ function questionSuivante() {
   const [t, m] = lireCle(k);
   const inverse = eleve.reglages.melange && Math.random() < 0.5;
   seance.q = { cle: k, a: inverse ? m : t, b: inverse ? t : m, res: t * m, t0: Date.now() };
+  seance.poses[k] = (seance.poses[k] || 0) + 1;
   seance.attente = false;
   afficherOperation(!seance.vocal);
   if (seance.vocal) dire();
