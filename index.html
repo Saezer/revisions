@@ -313,6 +313,14 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
 .legendes strong { display: block; font-size: .9rem; }
 .legendes span { color: var(--doux); font-size: .9rem; }
 .debug { margin: 0; width: 100%; text-align: left; font: .75rem/1.4 ui-monospace, Consolas, monospace; color: var(--doux); white-space: pre-wrap; border-top: 1px dashed var(--trait); padding-top: 8px; }
+.segments.petits button { padding: 5px 10px; font-size: .85rem; }
+.tableau-boite { overflow-x: auto; }
+.categories { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.categories th, .categories td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--trait); white-space: nowrap; }
+.categories tr:first-child th { color: var(--doux); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+.categories tr:not(:first-child) { cursor: pointer; }
+.categories tr:not(:first-child):hover { background: var(--carreau); }
+.categories th[scope="row"] { font-family: var(--f-titre); font-size: 1.05rem; }
 .vide { border: 2px dashed var(--trait); border-radius: 12px; padding: 16px; color: var(--doux); text-align: center; }
 .avertissement { background: color-mix(in srgb, var(--fluo) 35%, var(--surface)); border-radius: 10px; padding: 8px 12px; font-size: .9rem; }
 
@@ -506,12 +514,12 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
         </div>
         <div class="rangee" style="justify-content:space-between">
           <div class="champ" id="champ-nombre">
-            <span class="etiquette">Nombre de questions</span>
-            <div class="segments" id="nombres">
-              <button type="button" data-nb="10">10</button>
-              <button type="button" data-nb="20">20</button>
-              <button type="button" data-nb="30">30</button>
-            </div>
+            <label class="etiquette" for="nombres">Nombre de questions</label>
+            <select class="saisie mini" id="nombres">
+              <option>10</option><option>20</option><option>30</option><option>40</option><option>50</option>
+              <option>60</option><option>70</option><option>80</option><option>90</option><option>99</option>
+              <option value="0" id="option-toutes">Toutes les opérations</option>
+            </select>
           </div>
           <button class="btn btn-principal" type="button" id="demarrer">C'est parti !</button>
         </div>
@@ -545,9 +553,18 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
               <h2>Ma progression</h2>
               <span class="note" id="note-progression"></span>
             </div>
+            <div class="segments petits" id="filtres-progression" hidden></div>
             <div id="progression"></div>
           </div>
         </div>
+      </div>
+
+      <div class="bloc">
+        <div class="bloc-tete">
+          <h2>Résultats par catégorie</h2>
+          <span class="note">clique sur une ligne pour voir sa progression</span>
+        </div>
+        <div id="categories"></div>
       </div>
 
       <div class="bloc">
@@ -1159,6 +1176,7 @@ function afficherTableau() {
   afficherPythagore();
   afficherFaibles();
   afficherProgression();
+  afficherCategories();
   afficherSucces();
   montrer("tableau");
 }
@@ -1185,7 +1203,9 @@ function afficherReglages() {
     zone.append(b);
   }
   for (const b of document.querySelectorAll("#modes .mode")) b.setAttribute("aria-pressed", b.dataset.mode === r.mode);
-  for (const b of document.querySelectorAll("#nombres button")) b.setAttribute("aria-pressed", Number(b.dataset.nb) === r.nb);
+  $("#nombres").value = String(r.nb);
+  const operations = new Set(r.tables.flatMap(t => FACTEURS.map(m => paire(cle(t, m))))).size;
+  $("#option-toutes").textContent = "Toutes les opérations (" + operations + ")";
   $("#champ-nombre").hidden = r.mode === "chrono";
   $("#melange").checked = r.melange;
   $("#vocal").checked = r.vocal;
@@ -1208,9 +1228,8 @@ for (const b of document.querySelectorAll(".raccourcis button")) {
 for (const b of document.querySelectorAll("#modes .mode")) {
   b.addEventListener("click", () => { eleve.reglages.mode = b.dataset.mode; afficherReglages(); Stockage.sauver(); });
 }
-for (const b of document.querySelectorAll("#nombres button")) {
-  b.addEventListener("click", () => { eleve.reglages.nb = Number(b.dataset.nb); afficherReglages(); Stockage.sauver(); });
-}
+$("#nombres").addEventListener("change", ev => { eleve.reglages.nb = Number(ev.target.value); Stockage.sauver(); });
+// La liste « Toutes les opérations (N) » suit les tables cochées.
 $("#melange").addEventListener("change", ev => { eleve.reglages.melange = ev.target.checked; Stockage.sauver(); });
 $("#vocal").addEventListener("change", ev => { eleve.reglages.vocal = ev.target.checked; afficherReglages(); Stockage.sauver(); });
 
@@ -1275,42 +1294,106 @@ function afficherFaibles() {
   zone.append(ul);
 }
 
+// Catégories de séance : mode de jeu, en version écrite ou vocale.
+const NOMS_MODES = { entrainement: "Entraînement", faibles: "Points faibles", erreurs: "Retravailler mes erreurs", chrono: "Contre la montre" };
+const categorie = s => s.mode + (s.vocal ? "-vocal" : "");
+const nomCategorie = c => { const [mode, vocal] = c.split("-"); return (NOMS_MODES[mode] || mode) + (vocal ? " vocal" : ""); };
+const estChrono = c => c.startsWith("chrono");
+/** Score d'une séance : % de réussite, ou bonnes réponses par minute en contre la montre. */
+const scoreSeance = s => s.mode === "chrono" ? Math.round(s.bons * 60 / (s.dureePrevue || 60)) : pourcent(s.bons, s.total);
+let categorieGraphe = "toutes";
+
+function seancesFaites() { return eleve.sujets[SUJET].seances.filter(s => s.total > 0); }
+
+/** Tableau des résultats par catégorie (entraînement, contre la montre, vocal…). */
+function afficherCategories() {
+  const zone = $("#categories");
+  zone.textContent = "";
+  const groupes = {};
+  for (const s of seancesFaites()) (groupes[categorie(s)] = groupes[categorie(s)] || []).push(s);
+  const ordre = Object.keys(groupes).sort((a, b) => Object.keys(NOMS_MODES).indexOf(a.split("-")[0]) - Object.keys(NOMS_MODES).indexOf(b.split("-")[0]) || a.localeCompare(b));
+  if (!ordre.length) {
+    const p = document.createElement("p"); p.className = "vide";
+    p.textContent = "Les résultats de chaque façon de jouer (entraînement, contre la montre, vocal…) apparaîtront ici.";
+    zone.append(p); return;
+  }
+  const boite = document.createElement("div"); boite.className = "tableau-boite";
+  const table = document.createElement("table"); table.className = "categories";
+  const tete = document.createElement("tr");
+  for (const t of ["Catégorie", "Séances", "Questions", "Réussite", "Meilleur score", "Dernière séance"]) { const th = document.createElement("th"); th.textContent = t; tete.append(th); }
+  table.append(tete);
+  for (const c of ordre) {
+    const liste = groupes[c];
+    const questions = liste.reduce((a, s) => a + s.total, 0), bons = liste.reduce((a, s) => a + s.bons, 0);
+    const meilleur = Math.max(...liste.map(scoreSeance));
+    const derniere = liste[liste.length - 1];
+    const tr = document.createElement("tr");
+    const cellules = [nomCategorie(c), liste.length, questions, pourcent(bons, questions) + " %",
+      estChrono(c) ? meilleur + " bonnes / min" : meilleur + " %",
+      new Date(derniere.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) + " · " + derniere.bons + "/" + derniere.total];
+    cellules.forEach((v, i) => { const td = document.createElement(i ? "td" : "th"); td.textContent = v; if (!i) td.scope = "row"; tr.append(td); });
+    tr.addEventListener("click", () => { categorieGraphe = c; afficherProgression(); });
+    table.append(tr);
+  }
+  boite.append(table); zone.append(boite);
+}
+
 function afficherProgression() {
   const zone = $("#progression");
   zone.textContent = "";
-  const seances = eleve.sujets[SUJET].seances.filter(s => s.total > 0 && s.mode !== "chrono").slice(-15);
-  $("#note-progression").textContent = seances.length ? "réussite des " + seances.length + " dernières séances" : "";
+  const toutes = seancesFaites();
+  const presentes = [...new Set(toutes.map(categorie))];
+  if (categorieGraphe !== "toutes" && !presentes.includes(categorieGraphe)) categorieGraphe = "toutes";
+
+  // Choix de la catégorie affichée
+  const filtres = $("#filtres-progression");
+  filtres.textContent = "";
+  filtres.hidden = presentes.length < 2 && !presentes.some(estChrono);
+  for (const c of ["toutes", ...presentes]) {
+    const b = document.createElement("button"); b.type = "button";
+    b.textContent = c === "toutes" ? "Toutes (hors chrono)" : nomCategorie(c);
+    b.setAttribute("aria-pressed", c === categorieGraphe);
+    b.addEventListener("click", () => { categorieGraphe = c; afficherProgression(); });
+    filtres.append(b);
+  }
+
+  const chrono = estChrono(categorieGraphe);
+  const seances = toutes.filter(s => categorieGraphe === "toutes" ? s.mode !== "chrono" : categorie(s) === categorieGraphe).slice(-15);
+  $("#note-progression").textContent = seances.length ? (chrono ? "bonnes réponses par minute" : "réussite") + " des " + seances.length + " dernières séances" : "";
   if (!seances.length) {
     const p = document.createElement("p"); p.className = "vide";
     p.textContent = "Ta courbe de progression se dessinera au fil des séances.";
     zone.append(p); return;
   }
+  const max = chrono ? Math.max(10, Math.ceil(Math.max(...seances.map(scoreSeance)) / 10) * 10) : 100;
   const L = 600, H = 200, g = 34, bas = 24, haut = 10;
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("class", "graphe");
-  svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Pourcentage de réussite par séance");
-  const y = p => haut + (H - haut - bas) * (1 - p / 100);
-  for (const p of [0, 50, 100]) {
+  svg.setAttribute("role", "img"); svg.setAttribute("aria-label", chrono ? "Bonnes réponses par minute, par séance" : "Pourcentage de réussite par séance");
+  const y = v => haut + (H - haut - bas) * (1 - v / max);
+  for (const v of [0, max / 2, max]) {
     const l = document.createElementNS(ns, "line");
-    l.setAttribute("x1", g); l.setAttribute("x2", L); l.setAttribute("y1", y(p)); l.setAttribute("y2", y(p)); l.setAttribute("class", "axe");
+    l.setAttribute("x1", g); l.setAttribute("x2", L); l.setAttribute("y1", y(v)); l.setAttribute("y2", y(v)); l.setAttribute("class", "axe");
     const t = document.createElementNS(ns, "text");
-    t.setAttribute("x", g - 6); t.setAttribute("y", y(p) + 4); t.setAttribute("text-anchor", "end"); t.setAttribute("class", "txt");
-    t.textContent = p + " %";
+    t.setAttribute("x", g - 6); t.setAttribute("y", y(v) + 4); t.setAttribute("text-anchor", "end"); t.setAttribute("class", "txt");
+    t.textContent = chrono ? v : v + " %";
     svg.append(l, t);
   }
   const pas = (L - g) / 15;
+  const record = chrono ? Math.max(...seances.map(scoreSeance)) : null;
   seances.forEach((s, i) => {
-    const p = pourcent(s.bons, s.total);
+    const v = scoreSeance(s);
     const r = document.createElementNS(ns, "rect");
     const x = g + i * pas + pas * 0.18;
+    const h = Math.max(v, max * 0.02);
     r.setAttribute("x", x); r.setAttribute("width", pas * 0.64);
-    r.setAttribute("y", y(Math.max(p, 2))); r.setAttribute("height", y(0) - y(Math.max(p, 2)));
+    r.setAttribute("y", y(h)); r.setAttribute("height", y(0) - y(h));
     r.setAttribute("rx", 4);
-    r.setAttribute("class", "barre" + (p >= 90 ? " top" : p < 50 ? " bas" : ""));
+    r.setAttribute("class", "barre" + (chrono ? (v === record ? " top" : "") : v >= 90 ? " top" : v < 50 ? " bas" : ""));
     const titre = document.createElementNS(ns, "title");
     const d = new Date(s.date);
-    titre.textContent = d.toLocaleDateString("fr-FR") + " : " + s.bons + " / " + s.total + " (" + p + " %)";
+    titre.textContent = d.toLocaleDateString("fr-FR") + " · " + nomCategorie(categorie(s)) + " : " + s.bons + " / " + s.total + (chrono ? " (" + v + " par minute)" : " (" + v + " %)");
     r.append(titre);
     svg.append(r);
     if (i === 0 || i === seances.length - 1 || i % 3 === 0) {
@@ -1354,6 +1437,7 @@ function demarrer(mode, poolForce) {
   if (!pool.length) return;
   const total = mode === "chrono" ? Infinity
     : mode === "erreurs" ? Math.max(6, pool.length * 2)
+    : r.nb === 0 ? new Set(pool.map(paire)).size   // « Toutes les opérations » : chacune une fois
     : r.nb;
   seance = {
     mode, pool, total, faites: 0, bons: 0, erreurs: [], debut: Date.now(),
@@ -1621,7 +1705,7 @@ function terminer(abandon) {
   const c = eleve.compteurs;
   const sujet = eleve.sujets[SUJET];
   if (s.faites > 0) {
-    sujet.seances.push({ date: Date.now(), mode: s.mode, tables: eleve.reglages.tables.slice(), total: s.faites, bons: s.bons, duree: Date.now() - s.debut, abandon });
+    sujet.seances.push({ date: Date.now(), mode: s.mode, vocal: s.vocal, dureePrevue: s.mode === "chrono" ? reglages.dureeChrono : undefined, tables: eleve.reglages.tables.slice(), total: s.faites, bons: s.bons, duree: Date.now() - s.debut, abandon });
     if (sujet.seances.length > 300) sujet.seances.splice(0, sujet.seances.length - 300);
   }
   if (!abandon && s.faites > 0) {
