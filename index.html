@@ -574,7 +574,7 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
         </form>
         <div class="retour" id="retour" aria-live="assertive"></div>
       </div>
-      <p class="note">Tape ta réponse puis appuie sur Entrée.</p>
+      <p class="note" id="consigne">Tape ta réponse puis appuie sur Entrée.</p>
     </div>
   </section>
 
@@ -1337,6 +1337,7 @@ function demarrer(mode, poolForce) {
     q: null, attente: false, minuteur: null, horloge: null, nouveaux: [],
   };
   $("#chrono").hidden = mode !== "chrono";
+  $("#consigne").textContent = mode === "chrono" ? "Tape la bonne réponse : la suivante arrive toute seule. Entrée pour valider une réponse." : "Tape ta réponse puis appuie sur Entrée.";
   $("#barre-progres").hidden = mode === "chrono";
   montrer("quiz");
   if (mode === "chrono") {
@@ -1409,7 +1410,11 @@ $("#form-reponse").addEventListener("submit", ev => {
   if (!/^\d+$/.test(brut)) { $("#reponse").focus(); return; }
   repondre(parseInt(brut, 10));
 });
-$("#reponse").addEventListener("input", ev => { ev.target.value = ev.target.value.replace(/\D/g, ""); });
+$("#reponse").addEventListener("input", ev => {
+  ev.target.value = ev.target.value.replace(/\D/g, "");
+  // Contre la montre : la bonne réponse passe toute seule, sans appuyer sur Entrée.
+  if (seance && seance.mode === "chrono" && !seance.attente && ev.target.value !== "" && Number(ev.target.value) === seance.q.res) repondre(seance.q.res);
+});
 
 function repondre(valeur) {
   const s = seance, q = s.q;
