@@ -2,7 +2,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cahier de révisions</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;700;800&display=swap">
@@ -46,6 +45,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   margin: 0;
   background-color: var(--papier);
@@ -120,6 +120,8 @@ button { cursor: pointer; }
   border: 2px solid var(--trait); background: var(--surface); border-radius: var(--rayon); padding: 14px;
 }
 .carte-profil:hover { border-color: var(--stylo); }
+.carte-profil.admin { border-style: dashed; }
+.carte-profil.admin span { color: var(--stylo); font-weight: 700; }
 .carte-profil strong { font-family: var(--f-titre); font-size: 1.35rem; }
 .carte-profil span { color: var(--doux); font-size: .88rem; }
 .champ { display: grid; gap: 6px; }
@@ -265,6 +267,50 @@ button { cursor: pointer; }
 @keyframes arrive { from { transform: translateY(20px) scale(.9); opacity: 0 } to { transform: none; opacity: 1 } }
 #confettis { position: fixed; inset: 0; pointer-events: none; z-index: 25; width: 100%; height: 100%; }
 
+.dossier {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  border: 2px dashed var(--trait); border-radius: 12px; padding: 10px 14px; background: var(--papier);
+}
+.dossier strong { display: block; }
+.dossier span { color: var(--doux); font-size: .9rem; }
+.dossier.ok { border-style: solid; border-color: color-mix(in srgb, var(--vert) 55%, var(--trait)); }
+.dossier.attention { border-color: color-mix(in srgb, var(--fluo) 80%, var(--trait)); background: color-mix(in srgb, var(--fluo) 22%, var(--surface)); }
+.config { box-shadow: none; background: var(--papier); }
+code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-radius: 5px; }
+.bienvenue { justify-items: center; text-align: center; padding-block: 36px; }
+.titre-bienvenue { font-size: clamp(2.2rem, 9vw, 3.6rem); }
+.titre-bienvenue span { color: var(--stylo); }
+.meme { position: relative; margin: 8px auto 0; width: 170px; }
+.meme img { display: block; width: 170px; height: 170px; border-radius: 14px; image-rendering: pixelated; object-fit: cover; }
+.meme figcaption {
+  position: absolute; left: 6px; right: 6px; bottom: 8px; text-align: center; text-transform: uppercase;
+  font: 1.15rem/1.05 Impact, "Anton", "Arial Black", sans-serif; letter-spacing: .02em;
+  color: #fff; -webkit-text-stroke: 2px #000; paint-order: stroke fill; text-shadow: 0 2px 0 #000;
+}
+.meme.grand, .meme.grand img { width: 220px; }
+.meme.grand img { height: 220px; }
+.meme.grand figcaption { font-size: 1.5rem; }
+.bulle-gif { width: 64px; height: 64px; border-radius: 12px; image-rendering: pixelated; }
+.bulle { grid-template-columns: 64px 1fr; }
+#bouton-son[aria-pressed="false"] { color: var(--doux); }
+.saisie.mini { width: auto; min-width: 4.5rem; }
+.champs-admin { display: grid; gap: 10px; }
+.champs-admin h3 { margin-top: 6px; }
+.galerie { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+.media { display: grid; grid-template-rows: auto 1fr; border: 2px solid var(--trait); border-radius: 12px; overflow: hidden; background: var(--papier); }
+.media img { width: 100%; aspect-ratio: 1; object-fit: cover; image-rendering: pixelated; display: block; max-width: 100%; }
+.media .ecouter { height: 90px; border: 0; background: var(--carreau); font: 700 1.1rem var(--f-titre); color: var(--stylo); }
+.media.bloque img, .media.bloque .ecouter { opacity: .35; filter: grayscale(1); }
+.media-corps { padding: 10px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.media-corps strong { overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--carreau); color: var(--encre); justify-self: start; }
+.chip.vert { background: color-mix(in srgb, var(--vert) 25%, var(--surface)); color: var(--vert); }
+.chip.rouge { background: color-mix(in srgb, var(--rouge) 20%, var(--surface)); color: var(--rouge); }
+.declencheurs { margin: 0; padding-left: 18px; font-size: .85rem; color: var(--doux); }
+.legendes { display: grid; gap: 8px; }
+.legendes strong { display: block; font-size: .9rem; }
+.legendes span { color: var(--doux); font-size: .9rem; }
 .vide { border: 2px dashed var(--trait); border-radius: 12px; padding: 16px; color: var(--doux); text-align: center; }
 .avertissement { background: color-mix(in srgb, var(--fluo) 35%, var(--surface)); border-radius: 10px; padding: 8px 12px; font-size: .9rem; }
 
@@ -289,9 +335,12 @@ button { cursor: pointer; }
         <h1>Cahier de révisions</h1>
       </div>
     </div>
+    <div class="rangee">
+    <button class="btn" type="button" id="bouton-son" hidden></button>
     <div class="puce-eleve" id="puce-eleve" hidden>
       <span id="nom-eleve"></span>
       <button type="button" id="changer-eleve">Changer</button>
+    </div>
     </div>
   </header>
 
@@ -309,14 +358,104 @@ button { cursor: pointer; }
         <p class="etiquette">Bienvenue</p>
         <h2>Qui révise aujourd'hui ?</h2>
       </div>
+      <div class="dossier" id="dossier">
+        <div>
+          <strong id="dossier-titre"></strong>
+          <span id="dossier-texte"></span>
+        </div>
+        <button class="btn" type="button" id="choisir-dossier"></button>
+      </div>
+      <form class="bloc config" id="form-github" hidden autocomplete="off">
+        <h3>Sauvegarde dans le repo GitHub</h3>
+        <p class="note">Chaque profil est enregistré dans <code>profils/&lt;prénom&gt;.json</code> du repo. Le jeton reste dans ce navigateur : à saisir une fois par appareil.</p>
+        <div class="champ"><label for="gh-depot">Repo</label><input class="saisie" id="gh-depot" placeholder="Saezer/revisions"></div>
+        <div class="champ"><label for="gh-branche">Branche</label><input class="saisie" id="gh-branche" placeholder="main"></div>
+        <div class="champ"><label for="gh-jeton">Jeton d'accès (fine-grained, droit « Contents : Read and write » sur ce repo)</label><input class="saisie" id="gh-jeton" type="password" placeholder="github_pat_…"></div>
+        <div class="rangee">
+          <button class="btn btn-principal" type="submit" style="font-size:1.1rem">Connecter</button>
+          <button class="btn" type="button" id="gh-annuler">Annuler</button>
+          <button class="btn" type="button" id="gh-oublier">Oublier le jeton</button>
+        </div>
+        <p class="note" id="gh-message" hidden></p>
+      </form>
       <div class="profils" id="liste-profils"></div>
       <form class="champ" id="form-profil" autocomplete="off">
-        <label for="prenom">Nouveau cahier : écris ton prénom</label>
+        <label for="prenom">Nouveau profil : écris ton prénom</label>
         <div class="rangee">
           <input class="saisie" id="prenom" name="prenom" maxlength="24" placeholder="Par exemple : Léa" style="flex:1;min-width:0">
           <button class="btn btn-principal" type="submit" style="font-size:1.1rem">Créer</button>
         </div>
+        <p class="note" id="erreur-profil" hidden></p>
       </form>
+    </div>
+  </section>
+
+  <!-- Écran : espace parent -->
+  <section id="ecran-admin" hidden>
+    <form class="bloc" id="form-mdp" autocomplete="off">
+      <p class="etiquette">Espace parent</p>
+      <h2 id="mdp-titre">Mot de passe</h2>
+      <div class="rangee">
+        <label for="mdp" class="etiquette" style="position:absolute;left:-9999px">Mot de passe</label>
+        <input class="saisie" type="password" id="mdp" style="flex:1;min-width:0">
+        <button class="btn btn-principal" type="submit" style="font-size:1.1rem">Entrer</button>
+      </div>
+      <p class="note" id="mdp-erreur" hidden></p>
+      <div><button class="btn" type="button" data-retour-profils>Retour aux profils</button></div>
+    </form>
+    <div id="admin-contenu" class="page" style="padding:0" hidden>
+      <div class="bloc">
+        <div class="bloc-tete">
+          <div><p class="etiquette">Espace parent</p><h2>Réglages</h2></div>
+          <button class="btn" type="button" data-retour-profils>Retour aux profils</button>
+        </div>
+        <p class="note">Ces réglages valent pour tous les profils et sont enregistrés dans <code>reglages.json</code>.</p>
+        <div class="champs-admin">
+          <h3>Tables de multiplication</h3>
+          <div class="rangee"><span>Tables de</span><select class="saisie mini" id="adm-tmin"></select><span>à</span><select class="saisie mini" id="adm-tmax"></select></div>
+          <div class="rangee"><span>Multiplier par</span><select class="saisie mini" id="adm-fmin"></select><span>à</span><select class="saisie mini" id="adm-fmax"></select></div>
+          <div class="rangee"><span>Durée du contre la montre</span><select class="saisie mini" id="adm-chrono"></select></div>
+          <h3>GIF, mèmes et sons</h3>
+          <div class="rangee">
+            <label class="case"><input type="checkbox" id="adm-images"> Images et GIF</label>
+            <label class="case"><input type="checkbox" id="adm-sons"> Sons</label>
+          </div>
+          <div class="rangee"><span>Thèmes :</span><span class="rangee" id="adm-themes"></span></div>
+          <div class="rangee"><span>Âge maximum des médias</span><select class="saisie" id="adm-age" style="width:auto"></select></div>
+          <div class="rangee"><span>Contenus interdits :</span><span class="rangee" id="adm-interdits"></span></div>
+          <p class="note">Un média sans âge indiqué est traité comme réservé aux 18 ans et plus.</p>
+          <div class="rangee"><span>Un mème toutes les</span><select class="saisie mini" id="adm-seuil-bonnes"></select><span>bonnes réponses d'affilée</span></div>
+          <div class="rangee"><span>Un mème d'encouragement toutes les</span><select class="saisie mini" id="adm-seuil-erreurs"></select><span>erreurs</span></div>
+        </div>
+        <div class="rangee">
+          <button class="btn btn-principal" type="button" id="adm-enregistrer">Enregistrer</button>
+          <span class="note" id="adm-etat"></span>
+        </div>
+      </div>
+      <div class="bloc">
+        <div class="bloc-tete">
+          <h2>Galerie des médias</h2>
+          <span class="note" id="galerie-compte"></span>
+        </div>
+        <p class="note">Tous les GIF et sons du catalogue <code>medias/medias.js</code>, avec leurs déclencheurs. Les médias bloqués par les réglages ci-dessus n'apparaissent jamais.</p>
+        <div class="galerie" id="galerie"></div>
+        <h3>Légendes des mèmes</h3>
+        <div class="legendes" id="legendes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Écran : bienvenue -->
+  <section id="ecran-bienvenue" hidden>
+    <div class="bloc bienvenue">
+      <p class="etiquette">Profil ouvert</p>
+      <h2 class="titre-bienvenue">Bienvenue <span id="bienvenue-nom"></span> !</h2>
+      <p id="bienvenue-texte"></p>
+      <p class="note" id="bienvenue-fichier"></p>
+      <div class="rangee" style="justify-content:center">
+        <button class="btn btn-principal" type="button" id="ouvrir-cahier">Ouvrir mon cahier</button>
+        <button class="btn" type="button" id="pas-moi">Ce n'est pas moi</button>
+      </div>
     </div>
   </section>
 
@@ -345,7 +484,7 @@ button { cursor: pointer; }
               <button type="button" data-tables="2-5">2 à 5</button>
               <button type="button" data-tables="6-9">6 à 9</button>
               <button type="button" data-tables="2-10">2 à 10</button>
-              <button type="button" data-tables="1-12">Toutes</button>
+              <button type="button" data-toutes>Toutes</button>
             </div>
           </div>
           <div class="choix-tables" id="choix-tables"></div>
@@ -355,7 +494,7 @@ button { cursor: pointer; }
           <div class="modes" id="modes">
             <button type="button" class="mode" data-mode="entrainement"><strong>Entraînement</strong><span>Des multiplications au hasard dans les tables choisies.</span></button>
             <button type="button" class="mode" data-mode="faibles"><strong>Points faibles</strong><span>Les calculs qui te posent le plus de problèmes.</span></button>
-            <button type="button" class="mode" data-mode="chrono"><strong>Contre la montre</strong><span>Un maximum de bonnes réponses en 1 minute.</span></button>
+            <button type="button" class="mode" data-mode="chrono"><strong>Contre la montre</strong><span></span></button>
           </div>
         </div>
         <div class="rangee" style="justify-content:space-between">
@@ -443,6 +582,7 @@ button { cursor: pointer; }
   <section id="ecran-bilan" hidden>
     <div class="bloc quiz">
       <p class="etiquette" id="bilan-titre">Bilan de la séance</p>
+      <div id="bilan-meme"></div>
       <div class="score" id="bilan-score"></div>
       <h2 id="bilan-message"></h2>
       <p class="note" id="bilan-detail"></p>
@@ -463,16 +603,49 @@ button { cursor: pointer; }
 <div class="bulles" id="bulles" aria-live="polite"></div>
 <canvas id="confettis" aria-hidden="true"></canvas>
 
+<script src="config.js"></script>
+<script src="medias/medias.js"></script>
 <script>
 "use strict";
 // ---------------------------------------------------------------------------
 // Données et réglages
 // ---------------------------------------------------------------------------
-const TABLES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-const FACTEURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+let TABLES = [];              // tables proposées (espace parent)
+let FACTEURS = [];            // multiplicateurs proposés (espace parent)
 const MAITRISE = 3;           // réussites d'affilée pour qu'un calcul soit « maîtrisé »
 const ECLAIR_MS = 2000;       // réponse « éclair »
-const DUREE_CHRONO = 60000;
+const AGES = [3, 7, 12, 16, 18];
+const ETIQUETTES = { sexuel: "Caractère sexuel", nsfw: "NSFW (choquant, adulte)", violence: "Violence", grossier: "Langage grossier", peur: "Peur, horreur" };
+const THEMES = { chats: "Chats", blocs: "Blocs (style Minecraft)" };
+const MOMENTS = {
+  bonne: "Toutes les N bonnes réponses d'affilée",
+  serie: "Longue série (2 × N bonnes réponses d'affilée et plus)",
+  rate: "Toutes les N erreurs dans une séance",
+  succes: "Chaque succès débloqué",
+  bravo: "Bilan de séance réussi (80 % ou plus)",
+  courage: "Bilan de séance difficile (moins de 80 %)",
+};
+/** Réglages de l'espace parent, communs à tous les profils (reglages.json). */
+const REGLAGES_DEFAUT = {
+  tableMin: 1, tableMax: 9, facteurMin: 1, facteurMax: 10,
+  dureeChrono: 60,
+  medias: {
+    images: true, sons: true,
+    ageMax: 16,                       // bloque tout ce qui est réservé aux 18 ans et plus
+    interdits: ["sexuel", "nsfw"],    // étiquettes bloquées
+    themes: ["chats", "blocs"],
+    seuilBonnes: 3,                   // un mème toutes les 3 bonnes réponses d'affilée
+    seuilErreurs: 3,                  // un mème d'encouragement toutes les 3 erreurs
+  },
+};
+function completerReglages(r) {
+  const d = clone(REGLAGES_DEFAUT);
+  r = r ? clone(r) : {};
+  const res = Object.assign(d, r);
+  res.medias = Object.assign(clone(REGLAGES_DEFAUT.medias), r.medias || {});
+  return res;
+}
+const plage = (a, b) => Array.from({ length: Math.max(0, b - a + 1) }, (_, i) => a + i);
 const CLE_LOCALE = "cahier-revisions-v1";
 const SUJET = "multiplications";
 
@@ -510,7 +683,8 @@ function completer(e) {
 function tableMaitrisee(faits, t) {
   return FACTEURS.every(m => (faits[cle(t, m)]?.n || 0) >= MAITRISE);
 }
-const SUCCES = [
+let SUCCES = [];
+const SUCCES_FIXES = [
   { id: "premier_pas", nom: "Premier pas", desc: "Donner sa première bonne réponse", sym: "1", test: c => c.bonnes >= 1 },
   { id: "serie_5", nom: "Bien lancé", desc: "5 bonnes réponses d'affilée", sym: "×5", test: c => c.serieMax >= 5 },
   { id: "serie_10", nom: "En feu", desc: "10 bonnes réponses d'affilée", sym: "×10", test: c => c.serieMax >= 10 },
@@ -520,9 +694,9 @@ const SUCCES = [
   { id: "sans_faute_5", nom: "Perfectionniste", desc: "Finir 5 séances sans faute", sym: "5 ★", test: c => c.sansFaute >= 5 },
   { id: "eclair", nom: "Éclair", desc: "Trouver une bonne réponse en moins de 2 secondes", sym: "2 s", test: c => c.eclairs >= 1 },
   { id: "eclair_50", nom: "Réflexes de champion", desc: "50 bonnes réponses en moins de 2 secondes", sym: "50 ×", test: c => c.eclairs >= 50 },
-  { id: "chrono_15", nom: "Contre la montre", desc: "15 bonnes réponses en 1 minute", sym: "15", test: c => c.chronoRecord >= 15 },
-  { id: "chrono_25", nom: "Fusée", desc: "25 bonnes réponses en 1 minute", sym: "25", test: c => c.chronoRecord >= 25 },
-  { id: "chrono_35", nom: "Vitesse lumière", desc: "35 bonnes réponses en 1 minute", sym: "35", test: c => c.chronoRecord >= 35 },
+  { id: "chrono_15", nom: "Contre la montre", desc: "15 bonnes réponses par minute en contre la montre", sym: "15", test: c => c.chronoRecord >= 15 },
+  { id: "chrono_25", nom: "Fusée", desc: "25 bonnes réponses par minute en contre la montre", sym: "25", test: c => c.chronoRecord >= 25 },
+  { id: "chrono_35", nom: "Vitesse lumière", desc: "35 bonnes réponses par minute en contre la montre", sym: "35", test: c => c.chronoRecord >= 35 },
   { id: "bonnes_50", nom: "Cinquantaine", desc: "50 bonnes réponses en tout", sym: "50", test: c => c.bonnes >= 50 },
   { id: "bonnes_200", nom: "Calculateur", desc: "200 bonnes réponses en tout", sym: "200", test: c => c.bonnes >= 200 },
   { id: "bonnes_500", nom: "Super calculateur", desc: "500 bonnes réponses en tout", sym: "500", test: c => c.bonnes >= 500 },
@@ -537,10 +711,28 @@ const SUCCES = [
   { id: "revanche_10", nom: "Rien ne me résiste", desc: "Prendre sa revanche sur 10 calculs", sym: "↺10", test: c => c.revanches >= 10 },
   { id: "courage", nom: "Courage", desc: "Terminer une séance malgré 3 erreurs ou plus", sym: "♥", test: c => c.courage >= 1 },
   { id: "faibles", nom: "Chasseur de pièges", desc: "Terminer une séance « Points faibles »", sym: "?!", test: c => c.faibles >= 1 },
-  ...TABLES.map(t => ({ id: "table_" + t, nom: "Maître de la table de " + t, desc: "Réussir chaque calcul de la table de " + t + " 3 fois de suite", sym: "×" + t, test: (c, f) => tableMaitrisee(f, t) })),
-  { id: "tables_2_10", nom: "Grand maître", desc: "Maîtriser toutes les tables de 2 à 10", sym: "★", test: (c, f) => [2, 3, 4, 5, 6, 7, 8, 9, 10].every(t => tableMaitrisee(f, t)) },
-  { id: "tables_toutes", nom: "Légende des tables", desc: "Maîtriser toutes les tables de 1 à 12", sym: "★★", test: (c, f) => TABLES.every(t => tableMaitrisee(f, t)) },
 ];
+/** Succès fixes + un succès par table proposée + le grand maître. */
+function construireSucces() {
+  SUCCES = [
+    ...SUCCES_FIXES,
+    ...TABLES.map(t => ({ id: "table_" + t, nom: "Maître de la table de " + t, desc: "Réussir chaque calcul de la table de " + t + " 3 fois de suite", sym: "×" + t, test: (c, f) => tableMaitrisee(f, t) })),
+    { id: "tables_toutes", nom: "Grand maître", desc: "Maîtriser toutes les tables de " + TABLES[0] + " à " + TABLES[TABLES.length - 1], sym: "★", test: (c, f) => TABLES.every(t => tableMaitrisee(f, t)) },
+  ];
+}
+/** Applique les réglages parent : tables et multiplicateurs proposés. */
+function appliquerReglages() {
+  TABLES = plage(reglages.tableMin, reglages.tableMax);
+  FACTEURS = plage(reglages.facteurMin, reglages.facteurMax);
+  construireSucces();
+  $("#bouton-son").hidden = !reglages.medias.sons;
+  prechargerImages();
+}
+/** Le calcul fait-il partie des tables et multiplicateurs proposés ? */
+function dansPlage(k) {
+  const [t, m] = lireCle(k);
+  return TABLES.includes(t) && FACTEURS.includes(m);
+}
 
 /** Débloque les succès atteints ; renvoie la liste des nouveaux. */
 function verifierSucces() {
@@ -556,88 +748,302 @@ function verifierSucces() {
 }
 
 // ---------------------------------------------------------------------------
-// Sauvegarde : base de l'artefact si disponible, sinon navigateur
+// Sauvegarde : un fichier profils/<prénom>.json par profil, dans le repo
+// GitHub (API « contents »), plus une copie dans le navigateur. Les profils
+// modifiés hors connexion sont renvoyés au lancement suivant.
 // ---------------------------------------------------------------------------
+const CLE_GITHUB = "cahier-revisions-github";
+const CLE_A_ENVOYER = "cahier-revisions-a-envoyer";
+const CLE_REGLAGES = "cahier-revisions-reglages";
+const DELAI_ENVOI = 20000;    // regroupe les réponses d'une séance en un seul commit
+const REGLAGES = "@reglages"; // identifiant des réglages parent dans la file d'envoi
+
+function versBase64(texte) {
+  const octets = new TextEncoder().encode(texte);
+  let bin = "";
+  for (let i = 0; i < octets.length; i += 0x8000) bin += String.fromCharCode.apply(null, octets.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function depuisBase64(b64) {
+  return new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+}
+
 const Stockage = {
-  db: null,
-  enLigne: false,
+  config: null,        // { depot: "Saezer/revisions", branche: "main", jeton }
+  etat: "aucun",       // aucun | ok | hors-ligne | refuse
+  shas: {},            // version GitHub de chaque fichier (par chemin), exigée pour le remplacer
+  aEnvoyer: new Set(), // identifiants de profils (ou REGLAGES) pas encore envoyés
+  messages: {},        // message de commit en attente
+  minuteurs: {},
   file: Promise.resolve(),
-  minuteur: null,
-  async init() {
-    if (window.claude && typeof window.claude.use === "function") {
-      try { this.db = await window.claude.use("db"); } catch (e) { this.db = null; }
-    }
-    this.enLigne = !!this.db;
+
+  init() {
+    try { this.config = JSON.parse(localStorage.getItem(CLE_GITHUB) || "null"); } catch (e) { this.config = null; }
+    try { this.aEnvoyer = new Set(JSON.parse(localStorage.getItem(CLE_A_ENVOYER) || "[]")); } catch (e) { this.aEnvoyer = new Set(); }
   },
-  lireLocal() {
-    try { return JSON.parse(localStorage.getItem(CLE_LOCALE) || "{}") || {}; } catch (e) { return {}; }
+  garderAEnvoyer() {
+    try { localStorage.setItem(CLE_A_ENVOYER, JSON.stringify([...this.aEnvoyer])); } catch (e) { /* stockage indisponible */ }
+  },
+  lireLocal(cle, defaut) {
+    try { return JSON.parse(localStorage.getItem(cle) || "null") || defaut; } catch (e) { return defaut; }
   },
   ecrireLocal() {
-    try { localStorage.setItem(CLE_LOCALE, JSON.stringify(eleves)); } catch (e) { /* stockage indisponible */ }
+    try {
+      localStorage.setItem(CLE_LOCALE, JSON.stringify(eleves));
+      localStorage.setItem(CLE_REGLAGES, JSON.stringify(reglages));
+    } catch (e) { /* stockage indisponible */ }
   },
+
+  api(chemin, options = {}) {
+    const c = this.config;
+    const entetes = { Accept: "application/vnd.github+json", Authorization: "Bearer " + c.jeton, "X-GitHub-Api-Version": "2022-11-28" };
+    if (options.body) entetes["Content-Type"] = "application/json";
+    return fetch("https://api.github.com/repos/" + c.depot + chemin, { ...options, headers: entetes, cache: "no-store" });
+  },
+  url(fichier) { return "/contents/" + fichier.split("/").map(encodeURIComponent).join("/"); },
+  ref() { return "?ref=" + encodeURIComponent(this.config.branche); },
+  fichier(id) { return id === REGLAGES ? "reglages.json" : "profils/" + id + ".json"; },
+  /** Classe une erreur : jeton refusé ou réseau / GitHub indisponible. */
+  noterErreur(e) {
+    this.etat = e === 401 || e === 403 || e === 404 ? "refuse" : "hors-ligne";
+    afficherDossier();
+  },
+
+  /** Vérifie un jeton et l'enregistre pour cet appareil. */
+  async connecter(config) {
+    const ancien = this.config;
+    this.config = config;
+    let r;
+    try { r = await this.api(""); } catch (e) { this.config = ancien; throw "GitHub est injoignable : vérifie la connexion internet."; }
+    if (!r.ok) { this.config = ancien; throw r.status === 404 ? "Repo introuvable avec ce jeton : vérifie le nom du repo et les accès du jeton." : "Jeton refusé (erreur " + r.status + ")."; }
+    const depot = await r.json();
+    if (depot.permissions && !depot.permissions.push) { this.config = ancien; throw "Ce jeton peut lire le repo mais pas écrire : donne-lui le droit « Contents : Read and write »."; }
+    try { localStorage.setItem(CLE_GITHUB, JSON.stringify(config)); } catch (e) { /* à ressaisir au prochain lancement */ }
+  },
+  oublier() {
+    this.config = null;
+    this.etat = "aucun";
+    try { localStorage.removeItem(CLE_GITHUB); } catch (e) { /* rien à oublier */ }
+  },
+
+  /** Lit un fichier JSON du repo ; null s'il n'existe pas ou est illisible. */
+  async lire(fichier) {
+    const r = await this.api(this.url(fichier) + this.ref());
+    if (r.status === 404) return null;
+    if (!r.ok) throw r.status;
+    const j = await r.json();
+    this.shas[fichier] = j.sha;
+    try { return JSON.parse(depuisBase64(j.content)); } catch (e) { return null; }
+  },
+  /** Garde la version la plus récente entre le navigateur et le repo. */
+  fusionner(id, distant) {
+    const local = id === REGLAGES ? reglagesLocaux : elevesLocaux[id];
+    if (!local || (distant.maj || 0) >= (local.maj || 0)) { this.aEnvoyer.delete(id); return distant; }
+    this.aEnvoyer.add(id);
+    return local;
+  },
+
+  /** Lit profils et réglages : depuis le repo si possible, sinon depuis le navigateur. */
   async charger() {
-    const tous = this.lireLocal();
-    if (this.db) {
+    elevesLocaux = this.lireLocal(CLE_LOCALE, {});
+    reglagesLocaux = this.lireLocal(CLE_REGLAGES, null);
+    const tous = { ...elevesLocaux };
+    let regl = reglagesLocaux;
+    if (this.config) {
       try {
-        const snap = await this.db.collection("eleves").get();
-        for (const d of snap.docs) {
-          const data = d.data();
-          if (data && (!tous[d.id] || (data.maj || 0) >= (tous[d.id].maj || 0))) tous[d.id] = clone(data);
-        }
-      } catch (e) {
-        this.enLigne = false;
-        avertir("Le cahier en ligne ne répond pas : la progression est gardée sur cet appareil.");
-      }
+        const r = await this.api(this.url("profils") + this.ref());
+        if (!r.ok && r.status !== 404) throw r.status;
+        const liste = r.ok ? await r.json() : [];
+        const noms = Array.isArray(liste) ? liste.filter(f => f.type === "file" && f.name.endsWith(".json")).map(f => f.name.slice(0, -5)) : [];
+        await Promise.all(noms.map(async id => {
+          const data = await this.lire(this.fichier(id));
+          if (data && data.prenom) tous[id] = this.fusionner(id, data);
+        }));
+        for (const id of Object.keys(tous)) if (!this.shas[this.fichier(id)]) this.aEnvoyer.add(id);
+        const distants = await this.lire("reglages.json");
+        if (distants) regl = this.fusionner(REGLAGES, distants);
+        else if (regl) this.aEnvoyer.add(REGLAGES);
+        this.etat = "ok";
+      } catch (e) { this.noterErreur(e); }
     }
-    for (const k of Object.keys(tous)) completer(tous[k]);
-    return tous;
-  },
-  /** Enregistre l'élève courant (regroupe les écritures rapprochées). */
-  sauver(immediat) {
-    if (!eleve) return;
-    eleve.maj = Date.now();
+    for (const id of Object.keys(tous)) { completer(tous[id]); tous[id].id = id; }
+    eleves = tous;
+    reglages = completerReglages(regl);
+    this.garderAEnvoyer();
     this.ecrireLocal();
-    if (!this.enLigne) return;
-    clearTimeout(this.minuteur);
-    const id = eleve.id;
-    const envoyer = () => {
-      const donnees = clone(eleves[id]);
-      this.file = this.file.then(() => this.db.doc("eleves/" + id).set(donnees)).catch(e => {
-        if (e && (e.code === "invalid_argument" || e.code === "permission_denied")) {
-          this.enLigne = false;
-          avertir("Ce cahier ne peut pas être enregistré en ligne : la progression est gardée sur cet appareil.");
-        }
-      });
+  },
+  /** Relit un profil dans le repo (il a pu avancer sur un autre appareil). */
+  async rafraichir(id) {
+    if (!this.config || this.etat !== "ok" || !this.shas[this.fichier(id)]) return;
+    try {
+      const data = await this.lire(this.fichier(id));
+      if (data && data.prenom && (data.maj || 0) > (eleves[id].maj || 0)) {
+        eleves[id] = completer(data);
+        eleves[id].id = id;
+        this.aEnvoyer.delete(id);
+        this.garderAEnvoyer();
+        this.ecrireLocal();
+      }
+    } catch (e) { this.noterErreur(e); }
+  },
+
+  /** Envoie un profil ou les réglages dans le repo (un commit). */
+  async envoyer(id, keepalive) {
+    const data = id === REGLAGES ? reglages : eleves[id];
+    if (!data) return;
+    const fichier = this.fichier(id);
+    const corps = {
+      message: this.messages[id] || (id === REGLAGES ? "Réglages parent" : data.prenom + " : progression"),
+      content: versBase64(JSON.stringify(data, null, 2) + "\n"),
+      branch: this.config.branche,
     };
-    if (immediat) envoyer(); else this.minuteur = setTimeout(envoyer, 1500);
+    if (this.shas[fichier]) corps.sha = this.shas[fichier];
+    let r = await this.api(this.url(fichier), { method: "PUT", body: JSON.stringify(corps), keepalive });
+    if (r.status === 409 || r.status === 422) {
+      // Le fichier a changé ailleurs : on reprend sa version et on remplace.
+      const g = await this.api(this.url(fichier) + this.ref());
+      if (g.ok) corps.sha = (await g.json()).sha; else delete corps.sha;
+      r = await this.api(this.url(fichier), { method: "PUT", body: JSON.stringify(corps) });
+    }
+    if (!r.ok) throw r.status;
+    this.shas[fichier] = (await r.json()).content.sha;
+    delete this.messages[id];
+    this.aEnvoyer.delete(id);
+    this.garderAEnvoyer();
+  },
+  planifier(id, keepalive) {
+    clearTimeout(this.minuteurs[id]);
+    delete this.minuteurs[id];
+    if (!this.config || this.etat === "refuse") return this.file;
+    this.file = this.file
+      .then(() => this.aEnvoyer.has(id) ? this.envoyer(id, keepalive) : null)
+      .then(() => { if (this.etat !== "ok") this.etat = "ok"; afficherDossier(); })
+      .catch(e => this.noterErreur(e));
+    return this.file;
+  },
+  /** Envoie tout ce qui attend (lancement, fermeture de la page). */
+  envoyerTout(keepalive) {
+    for (const id of [...this.aEnvoyer]) this.planifier(id, keepalive);
+    return this.file;
+  },
+  /** Note une modification ; le commit part tout de suite ou après une pause. */
+  modifier(id, immediat, message) {
+    const data = id === REGLAGES ? reglages : eleves[id];
+    data.maj = Date.now();
+    this.ecrireLocal();
+    this.aEnvoyer.add(id);
+    this.garderAEnvoyer();
+    if (message) this.messages[id] = message;
+    if (immediat) { this.planifier(id); return; }
+    clearTimeout(this.minuteurs[id]);
+    this.minuteurs[id] = setTimeout(() => this.planifier(id), DELAI_ENVOI);
+  },
+  /** Enregistre l'élève courant. */
+  sauver(immediat, message) {
+    if (eleve) this.modifier(eleve.id, immediat, message);
   },
 };
-function avertir(texte) { const a = $("#avertissement"); a.textContent = texte; a.hidden = false; }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") Stockage.envoyerTout(true); });
+function avertir(texte) { const a = $("#avertissement"); a.textContent = texte; a.hidden = !texte; }
 
 // ---------------------------------------------------------------------------
 // État
 // ---------------------------------------------------------------------------
 let eleves = {};
+let elevesLocaux = {};
+let reglages = null;
+let reglagesLocaux = null;
 let eleve = null;
 let seance = null;
 
 function montrer(ecran) {
-  for (const id of ["chargement", "profils", "tableau", "quiz", "bilan"]) $("#ecran-" + id).hidden = id !== ecran;
-  $("#puce-eleve").hidden = !eleve || ecran === "profils" || ecran === "chargement";
+  for (const id of ["chargement", "profils", "admin", "bienvenue", "tableau", "quiz", "bilan"]) $("#ecran-" + id).hidden = id !== ecran;
+  $("#puce-eleve").hidden = !eleve || ["profils", "chargement", "admin"].includes(ecran);
   window.scrollTo(0, 0);
 }
 
 // ---------------------------------------------------------------------------
-// Écran des profils
+// Écran des profils : choisir ou créer un profil
 // ---------------------------------------------------------------------------
+function afficherDossier() {
+  const zone = $("#dossier"), titre = $("#dossier-titre"), texte = $("#dossier-texte"), bouton = $("#choisir-dossier");
+  const c = Stockage.config;
+  zone.className = "dossier " + (Stockage.etat === "ok" ? "ok" : "attention");
+  if (!c) {
+    titre.textContent = "Sauvegarde dans ce navigateur seulement";
+    texte.textContent = "Connecte le repo GitHub pour retrouver la progression sur n'importe quel appareil.";
+    bouton.textContent = "Connecter GitHub";
+  } else if (Stockage.etat === "ok") {
+    titre.textContent = "Sauvegarde GitHub : " + c.depot;
+    texte.textContent = "Dossier profils/, branche " + c.branche + (Stockage.aEnvoyer.size ? " · envoi en attente" : " · à jour");
+    bouton.textContent = "Modifier";
+  } else if (Stockage.etat === "refuse") {
+    titre.textContent = "GitHub refuse l'accès à " + c.depot;
+    texte.textContent = "Le jeton a peut-être expiré ou n'a pas les bons droits. La progression reste dans ce navigateur en attendant.";
+    bouton.textContent = "Changer le jeton";
+  } else {
+    titre.textContent = "GitHub injoignable";
+    texte.textContent = "La progression est gardée dans ce navigateur et sera envoyée dès que GitHub répondra.";
+    bouton.textContent = "Réessayer";
+  }
+}
+$("#choisir-dossier").addEventListener("click", async () => {
+  if (Stockage.config && Stockage.etat === "hors-ligne") { await recharger(); return; }
+  const c = Stockage.config || { depot: "Saezer/revisions", branche: "main", jeton: "" };
+  $("#gh-depot").value = c.depot;
+  $("#gh-branche").value = c.branche;
+  $("#gh-jeton").value = "";
+  $("#gh-message").hidden = true;
+  $("#gh-oublier").hidden = !Stockage.config;
+  $("#form-github").hidden = false;
+  $("#gh-jeton").focus();
+});
+$("#gh-annuler").addEventListener("click", () => { $("#form-github").hidden = true; });
+$("#gh-oublier").addEventListener("click", () => { Stockage.oublier(); $("#form-github").hidden = true; afficherDossier(); });
+$("#form-github").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const message = $("#gh-message");
+  const config = {
+    depot: $("#gh-depot").value.trim().replace(/^https?:\/\/github\.com\//, "").replace(/\.git$|\/$/g, ""),
+    branche: $("#gh-branche").value.trim() || "main",
+    jeton: $("#gh-jeton").value.trim() || (Stockage.config && Stockage.config.jeton) || "",
+  };
+  if (!/^[\w.-]+\/[\w.-]+$/.test(config.depot) || !config.jeton) {
+    message.textContent = "Indique le repo (propriétaire/nom) et le jeton.";
+    message.hidden = false; return;
+  }
+  message.textContent = "Vérification…"; message.hidden = false;
+  try { await Stockage.connecter(config); } catch (e) { message.textContent = String(e); return; }
+  $("#form-github").hidden = true;
+  await recharger();
+});
+/** Relit les profils du repo, puis envoie ceux qui n'y sont pas encore à jour. */
+async function recharger() {
+  await Stockage.charger();
+  appliquerReglages();
+  Stockage.envoyerTout();
+  afficherProfils();
+}
+
 function afficherProfils() {
+  afficherDossier();
   const liste = $("#liste-profils");
   liste.textContent = "";
   const ids = Object.keys(eleves).sort((a, b) => (eleves[b].maj || 0) - (eleves[a].maj || 0));
+  if (nomAdmin()) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "carte-profil admin";
+    const s = document.createElement("strong"); s.textContent = nomAdmin();
+    const i = document.createElement("span"); i.textContent = "Administrateur · espace parent";
+    b.append(s, i);
+    b.addEventListener("click", ouvrirAdmin);
+    liste.append(b);
+  }
   if (!ids.length) {
     const v = document.createElement("p");
     v.className = "vide";
-    v.textContent = "Aucun cahier pour l'instant. Crée le tien juste en dessous.";
+    v.textContent = "Aucun profil pour l'instant. Crée le tien juste en dessous.";
     liste.append(v);
   }
   for (const id of ids) {
@@ -646,35 +1052,60 @@ function afficherProfils() {
     b.type = "button";
     b.className = "carte-profil";
     const s = document.createElement("strong"); s.textContent = e.prenom;
-    const nbSucces = Object.keys(e.succes).length;
+    const nbSucces = SUCCES.filter(s => e.succes[s.id]).length;
     const i = document.createElement("span");
     i.textContent = e.compteurs.reponses
       ? pourcent(e.compteurs.bonnes, e.compteurs.reponses) + " % de réussite · " + nbSucces + " succès"
-      : "Cahier tout neuf";
+      : "Profil tout neuf";
     b.append(s, i);
     b.addEventListener("click", () => ouvrirEleve(id));
     liste.append(b);
   }
-  montrer("profils");
   $("#prenom").value = "";
+  $("#erreur-profil").hidden = true;
+  montrer("profils");
 }
+function messageProfil(texte) { const p = $("#erreur-profil"); p.textContent = texte; p.hidden = !texte; }
+
 $("#form-profil").addEventListener("submit", ev => {
   ev.preventDefault();
   const prenom = $("#prenom").value.trim().replace(/\s+/g, " ");
   const id = slug(prenom);
-  if (!id) { $("#prenom").focus(); return; }
-  if (!eleves[id]) eleves[id] = nouvelEleve(prenom);
+  if (!id) { messageProfil("Écris un prénom avec au moins une lettre."); $("#prenom").focus(); return; }
+  if (nomAdmin() && id === slug(nomAdmin())) { ouvrirAdmin(); return; }
+  if (eleves[id]) { messageProfil("Le profil « " + eleves[id].prenom + " » existe déjà : clique sur son nom au-dessus."); return; }
+  eleves[id] = nouvelEleve(prenom);
+  eleves[id].id = id;
+  Stockage.modifier(id, true, "Nouveau profil : " + prenom);
   ouvrirEleve(id);
-  Stockage.sauver(true);
 });
-$("#changer-eleve").addEventListener("click", () => { eleve = null; afficherProfils(); });
 
-function ouvrirEleve(id) {
+$("#changer-eleve").addEventListener("click", () => { Stockage.envoyerTout(); eleve = null; afficherProfils(); });
+
+// ---------------------------------------------------------------------------
+// Écran de bienvenue
+// ---------------------------------------------------------------------------
+async function ouvrirEleve(id) {
+  await Stockage.rafraichir(id);
   eleve = eleves[id];
   eleve.id = id;
   $("#nom-eleve").textContent = eleve.prenom;
-  afficherTableau();
+  $("#bienvenue-nom").textContent = eleve.prenom;
+  const c = eleve.compteurs;
+  const seances = eleve.sujets[SUJET].seances;
+  const derniere = seances[seances.length - 1];
+  $("#bienvenue-texte").textContent = c.reponses
+    ? (derniere ? "Dernière séance le " + new Date(derniere.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }) + " · " : "")
+      + pourcent(c.bonnes, c.reponses) + " % de réussite · " + SUCCES.filter(s => eleve.succes[s.id]).length + " succès sur " + SUCCES.length + "."
+    : "Ton cahier est tout neuf. Prêt pour ta première séance ?";
+  $("#bienvenue-fichier").textContent = Stockage.config
+    ? "Sauvegarde : " + Stockage.config.depot + " › profils/" + id + ".json"
+    : "Sauvegarde dans ce navigateur uniquement.";
+  montrer("bienvenue");
+  $("#ouvrir-cahier").focus();
 }
+$("#ouvrir-cahier").addEventListener("click", () => afficherTableau());
+$("#pas-moi").addEventListener("click", () => { eleve = null; afficherProfils(); });
 
 // ---------------------------------------------------------------------------
 // Tableau de bord
@@ -685,13 +1116,13 @@ function afficherTableau() {
   $("#bonjour").textContent = "Bonjour " + eleve.prenom + " !";
 
   // Chiffres clés
-  const maitrises = Object.values(sujet.faits).filter(f => f.n >= MAITRISE).length;
+  const maitrises = Object.entries(sujet.faits).filter(([k, f]) => dansPlage(k) && f.n >= MAITRISE).length;
   const chiffres = [
     [c.reponses ? pourcent(c.bonnes, c.reponses) + " %" : "–", "de réussite"],
     [c.bonnes, "bonnes réponses"],
     [maitrises + " / " + TABLES.length * FACTEURS.length, "calculs maîtrisés"],
     [c.serieMax, "record d'affilée"],
-    [Object.keys(eleve.succes).length + " / " + SUCCES.length, "succès"],
+    [SUCCES.filter(s => eleve.succes[s.id]).length + " / " + SUCCES.length, "succès"],
   ];
   const zone = $("#chiffres");
   zone.textContent = "";
@@ -712,6 +1143,12 @@ function afficherTableau() {
 
 function afficherReglages() {
   const r = eleve.reglages;
+  r.tables = r.tables.filter(t => TABLES.includes(t));
+  for (const b of document.querySelectorAll(".raccourcis button[data-tables]")) {
+    const [a, z] = b.dataset.tables.split("-").map(Number);
+    b.hidden = !TABLES.some(t => t >= a && t <= z) || (a === TABLES[0] && z === TABLES[TABLES.length - 1]);
+  }
+  $("#modes [data-mode=chrono] span").textContent = "Un maximum de bonnes réponses en " + libelleDuree() + ".";
   const zone = $("#choix-tables");
   zone.textContent = "";
   for (const t of TABLES) {
@@ -739,7 +1176,7 @@ function afficherReglages() {
 }
 for (const b of document.querySelectorAll(".raccourcis button")) {
   b.addEventListener("click", () => {
-    const [a, z] = b.dataset.tables.split("-").map(Number);
+    const [a, z] = b.dataset.tables ? b.dataset.tables.split("-").map(Number) : [-Infinity, Infinity];
     eleve.reglages.tables = TABLES.filter(t => t >= a && t <= z);
     afficherReglages(); Stockage.sauver();
   });
@@ -786,7 +1223,7 @@ function afficherPythagore() {
 function faitsFaibles(n) {
   const faits = eleve.sujets[SUJET].faits;
   return Object.entries(faits)
-    .filter(([, f]) => f.v > 0 && f.n < MAITRISE && f.v > f.b)
+    .filter(([k, f]) => dansPlage(k) && f.v > 0 && f.n < MAITRISE && f.v > f.b)
     .map(([k, f]) => ({ cle: k, f, score: (1 - (f.b + 1) / (f.v + 2)) + (MAITRISE - f.n) * 0.15 }))
     .sort((a, b) => b.score - a.score)
     .slice(0, n);
@@ -895,7 +1332,8 @@ function demarrer(mode, poolForce) {
     : r.nb;
   seance = {
     mode, pool, total, faites: 0, bons: 0, erreurs: [], debut: Date.now(),
-    fin: mode === "chrono" ? Date.now() + DUREE_CHRONO : null,
+    fin: mode === "chrono" ? Date.now() + reglages.dureeChrono * 1000 : null,
+    erreursDepuisMeme: 0,
     q: null, attente: false, minuteur: null, horloge: null, nouveaux: [],
   };
   $("#chrono").hidden = mode !== "chrono";
@@ -989,8 +1427,13 @@ function repondre(valeur) {
     champ.classList.add("juste");
     ardoise.classList.add("bondit");
     retour.className = "retour juste";
-    retour.textContent = duree < ECLAIR_MS ? "Éclair ! Bravo !" : ["Bravo !", "Exact !", "Super !", "Bien joué !", "Parfait !"][Math.floor(Math.random() * 5)];
-    s.minuteur = setTimeout(questionSuivante, 650);
+    retour.textContent = duree < ECLAIR_MS ? "Éclair ! Bravo !" : hasard(["Bravo !", "Exact !", "Super !", "Bien joué !", "Parfait !"]);
+    const serie = eleve.compteurs.serie, seuil = reglages.medias.seuilBonnes;
+    const moment = serie > 0 && serie % seuil === 0 ? (serie >= 2 * seuil ? "serie" : "bonne") : null;
+    const fig = moment && meme(moment, { n: serie });
+    if (fig) retour.append(fig);
+    jouerSon(moment === "serie" ? "serie" : "bonne");
+    s.minuteur = setTimeout(questionSuivante, fig ? 2200 : 650);
   } else {
     s.erreurs.push({ cle: q.cle, a: q.a, b: q.b, res: q.res, donne: valeur });
     champ.classList.add("faux");
@@ -1000,8 +1443,14 @@ function repondre(valeur) {
     const c = document.createElement("span"); c.className = "correction";
     c.textContent = q.a + " × " + q.b + " = " + q.res;
     retour.append(c);
+    s.erreursDepuisMeme++;
+    if (s.erreursDepuisMeme >= reglages.medias.seuilErreurs) {
+      const fig = meme("rate");
+      if (fig) { retour.append(fig); s.erreursDepuisMeme = 0; }
+    }
+    jouerSon("rate");
     $("#valider").textContent = "Suivant";
-    if (s.mode === "chrono") s.minuteur = setTimeout(questionSuivante, 1400);
+    if (s.mode === "chrono") s.minuteur = setTimeout(questionSuivante, retour.querySelector(".meme") ? 2400 : 1400);
   }
   afficherAvancement();
   const nouveaux = verifierSucces();
@@ -1052,12 +1501,13 @@ function terminer(abandon) {
     if (s.faites >= 10 && s.erreurs.length === 0) c.sansFaute++;
     if (s.erreurs.length >= 3) c.courage++;
     if (s.mode === "faibles") c.faibles++;
-    if (s.mode === "chrono") c.chronoRecord = Math.max(c.chronoRecord, s.bons);
+    if (s.mode === "chrono") c.chronoRecord = Math.max(c.chronoRecord, Math.round(s.bons * 60 / reglages.dureeChrono));
   }
   const nouveaux = verifierSucces();
   s.nouveaux.push(...nouveaux);
   nouveaux.forEach(annoncer);
-  Stockage.sauver(true);
+  const libelle = { entrainement: "entraînement", faibles: "points faibles", chrono: "contre la montre", erreurs: "erreurs" }[s.mode];
+  Stockage.sauver(true, eleve.prenom + " : " + s.bons + "/" + s.faites + " en " + libelle + (s.mode === "faibles" || s.mode === "erreurs" ? "" : " (tables " + eleve.reglages.tables.join(", ") + ")"));
   afficherBilan(abandon);
 }
 $("#arreter").addEventListener("click", () => {
@@ -1072,10 +1522,10 @@ function afficherBilan(abandon) {
   $("#bilan-titre").textContent = s.mode === "chrono" ? "Contre la montre" : abandon ? "Séance arrêtée" : "Bilan de la séance";
   const score = $("#bilan-score");
   score.textContent = s.bons;
-  const petit = document.createElement("small"); petit.textContent = s.mode === "chrono" ? " en 1 minute" : " / " + s.faites;
+  const petit = document.createElement("small"); petit.textContent = s.mode === "chrono" ? " en " + libelleDuree() : " / " + s.faites;
   score.append(petit);
   let message;
-  if (s.mode === "chrono") message = s.bons >= eleve.compteurs.chronoRecord && s.bons > 0 ? "Nouveau record !" : "Record actuel : " + eleve.compteurs.chronoRecord;
+  if (s.mode === "chrono") message = "Record : " + eleve.compteurs.chronoRecord + " bonnes réponses par minute";
   else if (p === 100) message = "Sans faute, champion !";
   else if (p >= 80) message = "Très bien joué !";
   else if (p >= 50) message = "C'est en bonne voie, continue !";
@@ -1084,6 +1534,14 @@ function afficherBilan(abandon) {
   const sec = Math.round((Date.now() - s.debut) / 1000);
   $("#bilan-detail").textContent = p + " % de réussite · " + (sec >= 60 ? Math.floor(sec / 60) + " min " : "") + (sec % 60) + " s";
 
+  const zm = $("#bilan-meme");
+  zm.textContent = "";
+  if (s.faites > 0) {
+    const reussi = s.mode === "chrono" ? s.bons > 0 && s.erreurs.length <= s.bons / 4 : p >= 80;
+    const fig = meme(reussi ? "bravo" : "courage", { grand: true });
+    if (fig) zm.append(fig);
+    jouerSon(reussi ? "bravo" : "courage");
+  }
   const zs = $("#bilan-succes");
   zs.textContent = "";
   for (const n of s.nouveaux) zs.append(carteSucces(n, true));
@@ -1110,17 +1568,222 @@ $("#retour-tableau").addEventListener("click", () => { seance = null; afficherTa
 $("#demarrer").addEventListener("click", () => demarrer(eleve.reglages.mode));
 
 // ---------------------------------------------------------------------------
+// Médias : GIF, mèmes et sons (catalogue medias/medias.js, filtré par l'espace parent)
+// ---------------------------------------------------------------------------
+const CLE_SON = "cahier-revisions-son";
+let sonCoupe = false;
+try { sonCoupe = localStorage.getItem(CLE_SON) === "coupe"; } catch (e) { /* son actif */ }
+const hasard = l => l[Math.floor(Math.random() * l.length)];
+const catalogue = () => window.MEDIAS || { images: [], sons: [], textes: {} };
+
+/** Raison pour laquelle un média est bloqué par l'espace parent, ou "" s'il est autorisé. */
+function blocage(m, type, r = reglages.medias) {
+  if (type === "images" && !r.images) return "Images désactivées";
+  if (type === "sons" && !r.sons) return "Sons désactivés";
+  const age = typeof m.age === "number" ? m.age : 18;   // sans âge : réservé aux adultes
+  if (age > r.ageMax) return "Âge " + age + (typeof m.age === "number" ? "" : " (non indiqué)");
+  const interdite = (m.etiquettes || []).find(e => r.interdits.includes(e));
+  if (interdite) return ETIQUETTES[interdite] || interdite;
+  if (m.theme && m.theme !== "tous" && !r.themes.includes(m.theme)) return "Thème " + (THEMES[m.theme] || m.theme) + " désactivé";
+  return "";
+}
+function choisirMedia(type, moment) {
+  return hasard((catalogue()[type] || []).filter(m => (m.moments || []).includes(moment) && !blocage(m, type))) || null;
+}
+function jouerSon(moment) {
+  if (sonCoupe) return;
+  const m = choisirMedia("sons", moment);
+  if (!m) return;
+  const a = new Audio("medias/" + m.fichier);
+  a.volume = 0.6;
+  a.play().catch(() => { /* lecture refusée par le navigateur */ });
+}
+/** Un GIF avec une légende façon mème, ou null si aucun média n'est autorisé. */
+function meme(moment, { n = 0, grand = false } = {}) {
+  const m = choisirMedia("images", moment);
+  if (!m) return null;
+  const fig = document.createElement("figure");
+  fig.className = "meme" + (grand ? " grand" : "");
+  const img = document.createElement("img"); img.src = "medias/" + m.fichier; img.alt = "";
+  const legende = document.createElement("figcaption");
+  const texte = hasard(catalogue().textes?.[moment] || [""]) || "";
+  legende.textContent = texte.replace("{n}", n).replace("{prenom}", eleve ? eleve.prenom : "");
+  fig.append(img, legende);
+  return fig;
+}
+function prechargerImages() {
+  for (const m of catalogue().images || []) if (!blocage(m, "images")) new Image().src = "medias/" + m.fichier;
+}
+function libelleDuree() {
+  const d = reglages.dureeChrono;
+  return d % 60 === 0 ? (d === 60 ? "1 minute" : d / 60 + " minutes") : d + " secondes";
+}
+function afficherBoutonSon() {
+  const b = $("#bouton-son");
+  b.textContent = sonCoupe ? "Son coupé" : "Son activé";
+  b.setAttribute("aria-pressed", !sonCoupe);
+}
+$("#bouton-son").addEventListener("click", () => {
+  sonCoupe = !sonCoupe;
+  try { localStorage.setItem(CLE_SON, sonCoupe ? "coupe" : "actif"); } catch (e) { /* réglage non mémorisé */ }
+  afficherBoutonSon();
+});
+afficherBoutonSon();
+
+// ---------------------------------------------------------------------------
+// Espace parent : mot de passe (config.js), réglages et galerie
+// ---------------------------------------------------------------------------
+let adminOuvert = false;
+let brouillon = null;
+
+function remplirSelect(sel, valeurs, libelle = v => v) {
+  sel.textContent = "";
+  for (const v of valeurs) { const o = document.createElement("option"); o.value = v; o.textContent = libelle(v); sel.append(o); }
+}
+function casesACocher(zone, valeurs, cochees, nom) {
+  zone.textContent = "";
+  for (const [cle, lib] of Object.entries(valeurs)) {
+    const l = document.createElement("label"); l.className = "case";
+    const i = document.createElement("input"); i.type = "checkbox"; i.value = cle; i.name = nom; i.checked = cochees.includes(cle);
+    l.append(i, " " + lib); zone.append(l);
+  }
+}
+remplirSelect($("#adm-tmin"), plage(1, 20)); remplirSelect($("#adm-tmax"), plage(1, 20));
+remplirSelect($("#adm-fmin"), plage(1, 20)); remplirSelect($("#adm-fmax"), plage(1, 20));
+remplirSelect($("#adm-chrono"), [30, 45, 60, 90, 120], v => v + " secondes");
+remplirSelect($("#adm-age"), AGES, v => v === 3 ? "3 ans (tout public)" : v === 18 ? "18 ans (tout autoriser)" : v + " ans");
+remplirSelect($("#adm-seuil-bonnes"), plage(1, 10)); remplirSelect($("#adm-seuil-erreurs"), plage(1, 10));
+
+const nomAdmin = () => (window.CONFIG && window.CONFIG.administrateur) || "";
+function ouvrirAdmin() {
+  eleve = null;
+  $("#mdp-titre").textContent = "Bonjour " + (nomAdmin() || "parent") + ", ton mot de passe ?";
+  montrer("admin");
+  $("#form-mdp").hidden = adminOuvert;
+  $("#admin-contenu").hidden = !adminOuvert;
+  if (adminOuvert) afficherAdmin(); else { $("#mdp").value = ""; $("#mdp-erreur").hidden = true; $("#mdp").focus(); }
+}
+for (const b of document.querySelectorAll("[data-retour-profils]")) b.addEventListener("click", () => afficherProfils());
+$("#form-mdp").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const attendu = window.CONFIG && window.CONFIG.motDePasseAdmin;
+  const erreur = $("#mdp-erreur");
+  if (!attendu) { erreur.textContent = "Aucun mot de passe défini : ajoute motDePasseAdmin dans config.js."; erreur.hidden = false; return; }
+  if ($("#mdp").value !== attendu) { erreur.textContent = "Mot de passe incorrect."; erreur.hidden = false; $("#mdp").select(); return; }
+  adminOuvert = true;
+  $("#form-mdp").hidden = true;
+  $("#admin-contenu").hidden = false;
+  afficherAdmin();
+});
+
+function afficherAdmin() {
+  brouillon = clone(reglages);
+  const r = brouillon, m = r.medias;
+  $("#adm-tmin").value = r.tableMin; $("#adm-tmax").value = r.tableMax;
+  $("#adm-fmin").value = r.facteurMin; $("#adm-fmax").value = r.facteurMax;
+  $("#adm-chrono").value = r.dureeChrono;
+  $("#adm-images").checked = m.images; $("#adm-sons").checked = m.sons;
+  $("#adm-age").value = m.ageMax;
+  $("#adm-seuil-bonnes").value = m.seuilBonnes; $("#adm-seuil-erreurs").value = m.seuilErreurs;
+  casesACocher($("#adm-themes"), THEMES, m.themes, "theme");
+  casesACocher($("#adm-interdits"), ETIQUETTES, m.interdits, "interdit");
+  $("#adm-etat").textContent = "";
+  afficherGalerie();
+}
+/** Lit le formulaire dans le brouillon (sans enregistrer). */
+function lireAdmin() {
+  const n = id => Number($(id).value);
+  const r = brouillon, m = r.medias;
+  r.tableMin = Math.min(n("#adm-tmin"), n("#adm-tmax")); r.tableMax = Math.max(n("#adm-tmin"), n("#adm-tmax"));
+  r.facteurMin = Math.min(n("#adm-fmin"), n("#adm-fmax")); r.facteurMax = Math.max(n("#adm-fmin"), n("#adm-fmax"));
+  r.dureeChrono = n("#adm-chrono");
+  m.images = $("#adm-images").checked; m.sons = $("#adm-sons").checked;
+  m.ageMax = n("#adm-age");
+  m.seuilBonnes = n("#adm-seuil-bonnes"); m.seuilErreurs = n("#adm-seuil-erreurs");
+  m.themes = [...document.querySelectorAll("#adm-themes input:checked")].map(i => i.value);
+  m.interdits = [...document.querySelectorAll("#adm-interdits input:checked")].map(i => i.value);
+}
+$("#admin-contenu").addEventListener("change", () => { lireAdmin(); $("#adm-etat").textContent = "Modifications non enregistrées."; afficherGalerie(); });
+$("#adm-enregistrer").addEventListener("click", () => {
+  lireAdmin();
+  reglages = completerReglages(brouillon);
+  appliquerReglages();
+  Stockage.modifier(REGLAGES, true, "Réglages parent : tables " + reglages.tableMin + " à " + reglages.tableMax + ", médias jusqu'à " + reglages.medias.ageMax + " ans");
+  afficherAdmin();
+  $("#adm-etat").textContent = "Réglages enregistrés.";
+});
+
+function puceTexte(texte, classe) {
+  const s = document.createElement("span"); s.className = "chip" + (classe ? " " + classe : ""); s.textContent = texte; return s;
+}
+const MOMENTS_SONS = { bonne: "Chaque bonne réponse", rate: "Chaque erreur" };
+function libelleMoment(moment, m, type) {
+  if (type === "sons" && MOMENTS_SONS[moment]) return MOMENTS_SONS[moment];
+  return MOMENTS[moment].replace("N bonnes", m.seuilBonnes + " bonnes").replace("2 × N", 2 * m.seuilBonnes).replace("N erreurs", m.seuilErreurs + " erreurs");
+}
+function afficherGalerie() {
+  const zone = $("#galerie");
+  zone.textContent = "";
+  const m = brouillon.medias;
+  let autorises = 0, total = 0;
+  for (const type of ["images", "sons"]) {
+    for (const media of catalogue()[type] || []) {
+      total++;
+      const raison = blocage(media, type, m);
+      if (!raison) autorises++;
+      const carte = document.createElement("article");
+      carte.className = "media" + (raison ? " bloque" : "");
+      if (type === "images") {
+        const img = document.createElement("img"); img.src = "medias/" + media.fichier; img.alt = media.fichier; img.loading = "lazy";
+        carte.append(img);
+      } else {
+        const b = document.createElement("button"); b.type = "button"; b.className = "ecouter"; b.textContent = "▶ Écouter";
+        b.addEventListener("click", () => { const a = new Audio("medias/" + media.fichier); a.volume = 0.6; a.play().catch(() => {}); });
+        carte.append(b);
+      }
+      const corps = document.createElement("div"); corps.className = "media-corps";
+      const nom = document.createElement("strong"); nom.textContent = media.fichier.split("/").pop();
+      const etat = puceTexte(raison ? "Bloqué : " + raison : "Autorisé", raison ? "rouge" : "vert");
+      const infos = document.createElement("div"); infos.className = "chips";
+      infos.append(puceTexte(type === "images" ? "Image" : "Son"), puceTexte(media.theme === "tous" ? "Tous thèmes" : THEMES[media.theme] || media.theme || "Sans thème"),
+        puceTexte(typeof media.age === "number" ? media.age + " ans et +" : "Âge non indiqué"));
+      for (const e of media.etiquettes || []) infos.append(puceTexte(ETIQUETTES[e] || e, "rouge"));
+      const declencheurs = document.createElement("ul"); declencheurs.className = "declencheurs";
+      for (const mo of media.moments || []) {
+        const li = document.createElement("li"); li.textContent = MOMENTS[mo] ? libelleMoment(mo, m, type) : mo; declencheurs.append(li);
+      }
+      corps.append(nom, etat, infos, declencheurs);
+      carte.append(corps);
+      zone.append(carte);
+    }
+  }
+  $("#galerie-compte").textContent = autorises + " autorisés sur " + total;
+  const leg = $("#legendes");
+  leg.textContent = "";
+  for (const [mo, textes] of Object.entries(catalogue().textes || {})) {
+    const d = document.createElement("div");
+    const t = document.createElement("strong"); t.textContent = MOMENTS[mo] ? libelleMoment(mo, m) : mo;
+    const p = document.createElement("span"); p.textContent = textes.join(" · ");
+    d.append(t, p); leg.append(d);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Annonces et confettis
 // ---------------------------------------------------------------------------
 function annoncer(s) {
   const b = document.createElement("div"); b.className = "bulle";
-  const m = document.createElement("div"); m.className = "medaille"; m.textContent = s.sym;
+  const img = choisirMedia("images", "succes");
+  let m;
+  if (img) { m = document.createElement("img"); m.className = "bulle-gif"; m.src = "medias/" + img.fichier; m.alt = ""; }
+  else { m = document.createElement("div"); m.className = "medaille"; m.textContent = s.sym; }
+  jouerSon("succes");
   const t = document.createElement("div");
   const sm = document.createElement("small"); sm.textContent = "Succès débloqué";
   const st = document.createElement("strong"); st.textContent = s.nom;
   t.append(sm, st); b.append(m, t);
   $("#bulles").append(b);
-  setTimeout(() => b.remove(), 3800);
+  setTimeout(() => b.remove(), 4500);
 }
 
 function confettis() {
@@ -1154,10 +1817,7 @@ function confettis() {
 // Démarrage
 // ---------------------------------------------------------------------------
 (async function demarrage() {
-  await Stockage.init();
-  eleves = await Stockage.charger();
-  if (!Stockage.db) avertir("Progression enregistrée dans ce navigateur, sur cet appareil.");
-  const ids = Object.keys(eleves);
-  if (ids.length === 1) ouvrirEleve(ids[0]); else afficherProfils();
+  Stockage.init();
+  await recharger();
 })();
 </script>
