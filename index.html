@@ -222,6 +222,7 @@ button { cursor: pointer; }
 }
 .question { font: 800 clamp(3rem, 14vw, 5.6rem)/1 var(--f-titre); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 .question .op { color: var(--stylo); margin: 0 .12em; }
+.question.ecoute span:not(.op) { color: var(--doux); }
 .reponse-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; }
 .reponse {
   width: 7ch; text-align: center; font: 800 2.6rem/1 var(--f-titre); font-variant-numeric: tabular-nums;
@@ -471,7 +472,10 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
       <div class="bloc" id="bloc-seance">
         <div class="bloc-tete">
           <h2>Nouvelle séance</h2>
-          <label class="case"><input type="checkbox" id="melange"> Mélanger l'ordre (7 × 3 ou 3 × 7)</label>
+          <div class="rangee">
+            <label class="case"><input type="checkbox" id="vocal"> Mode vocal : opérations dites à voix haute</label>
+            <label class="case"><input type="checkbox" id="melange"> Mélanger l'ordre (7 × 3 ou 3 × 7)</label>
+          </div>
         </div>
         <div class="champ">
           <span class="etiquette">Sujet</span>
@@ -571,6 +575,7 @@ code { font-size: .9em; background: var(--carreau); padding: 1px 5px; border-rad
           <label for="reponse" class="etiquette" style="position:absolute;left:-9999px">Ta réponse</label>
           <input class="reponse" id="reponse" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="go">
           <button class="btn btn-principal" type="submit" id="valider">Valider</button>
+          <button class="btn" type="button" id="repeter" hidden>Répéter</button>
         </form>
         <div class="retour" id="retour" aria-live="assertive"></div>
       </div>
@@ -660,8 +665,8 @@ const slug = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().repla
 function nouvelEleve(prenom) {
   return {
     prenom, cree: Date.now(), maj: Date.now(),
-    reglages: { tables: [2, 3, 4, 5], nb: 10, mode: "entrainement", melange: true },
-    compteurs: { bonnes: 0, reponses: 0, serie: 0, serieMax: 0, seances: 0, sansFaute: 0, courage: 0, faibles: 0, eclairs: 0, revanches: 0, chronoRecord: 0, jours: [] },
+    reglages: { tables: [2, 3, 4, 5], nb: 10, mode: "entrainement", melange: true, vocal: false },
+    compteurs: { bonnes: 0, reponses: 0, serie: 0, serieMax: 0, seances: 0, sansFaute: 0, courage: 0, faibles: 0, eclairs: 0, revanches: 0, chronoRecord: 0, examens: 0, examensParfaits: 0, jours: [] },
     succes: {},
     sujets: { [SUJET]: { faits: {}, seances: [] } },
   };
@@ -711,6 +716,8 @@ const SUCCES_FIXES = [
   { id: "revanche_10", nom: "Rien ne me résiste", desc: "Prendre sa revanche sur 10 calculs", sym: "↺10", test: c => c.revanches >= 10 },
   { id: "courage", nom: "Courage", desc: "Terminer une séance malgré 3 erreurs ou plus", sym: "♥", test: c => c.courage >= 1 },
   { id: "faibles", nom: "Chasseur de pièges", desc: "Terminer une séance « Points faibles »", sym: "?!", test: c => c.faibles >= 1 },
+  { id: "examen", nom: "À l'écoute", desc: "Terminer une séance en mode vocal", sym: "((·))", test: c => c.examens >= 1 },
+  { id: "examen_parfait", nom: "Oreille d'or", desc: "Réussir une séance vocale d'au moins 10 questions sans faute", sym: "((★))", test: c => c.examensParfaits >= 1 },
 ];
 /** Succès fixes + un succès par table proposée + le grand maître. */
 function construireSucces() {
@@ -1166,13 +1173,15 @@ function afficherReglages() {
   for (const b of document.querySelectorAll("#nombres button")) b.setAttribute("aria-pressed", Number(b.dataset.nb) === r.nb);
   $("#champ-nombre").hidden = r.mode === "chrono";
   $("#melange").checked = r.melange;
+  $("#vocal").checked = r.vocal;
 
   const info = $("#info-seance");
   let message = "";
   if (r.mode === "faibles" && !faitsFaibles(1).length) message = "Pas encore de point faible repéré : la séance portera sur les tables choisies.";
   else if (r.mode !== "faibles" && !r.tables.length) message = "Choisis au moins une table.";
+  else if (r.vocal && !voixPossible) message = "Ce navigateur ne sait pas lire à voix haute : utilise Edge ou Chrome.";
   info.textContent = message; info.hidden = !message;
-  $("#demarrer").disabled = r.mode !== "faibles" && !r.tables.length;
+  $("#demarrer").disabled = (r.mode !== "faibles" && !r.tables.length) || (r.vocal && !voixPossible);
 }
 for (const b of document.querySelectorAll(".raccourcis button")) {
   b.addEventListener("click", () => {
@@ -1188,6 +1197,7 @@ for (const b of document.querySelectorAll("#nombres button")) {
   b.addEventListener("click", () => { eleve.reglages.nb = Number(b.dataset.nb); afficherReglages(); Stockage.sauver(); });
 }
 $("#melange").addEventListener("change", ev => { eleve.reglages.melange = ev.target.checked; Stockage.sauver(); });
+$("#vocal").addEventListener("change", ev => { eleve.reglages.vocal = ev.target.checked; afficherReglages(); Stockage.sauver(); });
 
 /** Classe d'une case selon l'historique du calcul. */
 function etatFait(f) {
@@ -1334,10 +1344,13 @@ function demarrer(mode, poolForce) {
     mode, pool, total, faites: 0, bons: 0, erreurs: [], debut: Date.now(),
     fin: mode === "chrono" ? Date.now() + reglages.dureeChrono * 1000 : null,
     erreursDepuisMeme: 0,
+    vocal: !!eleve.reglages.vocal && voixPossible,
     q: null, attente: false, minuteur: null, horloge: null, nouveaux: [],
   };
   $("#chrono").hidden = mode !== "chrono";
-  $("#consigne").textContent = mode === "chrono" ? "Tape la bonne réponse : la suivante arrive toute seule. Entrée pour valider une réponse." : "Tape ta réponse puis appuie sur Entrée.";
+  $("#repeter").hidden = !seance.vocal;
+  $("#consigne").textContent = (seance.vocal ? "Écoute l'opération (touche R ou « Répéter » pour réentendre). " : "")
+    + (mode === "chrono" ? "Tape la bonne réponse : la suivante arrive toute seule. Entrée pour valider une réponse." : "Tape ta réponse puis appuie sur Entrée.");
   $("#barre-progres").hidden = mode === "chrono";
   montrer("quiz");
   if (mode === "chrono") {
@@ -1370,12 +1383,8 @@ function questionSuivante() {
   const inverse = eleve.reglages.melange && Math.random() < 0.5;
   seance.q = { cle: k, a: inverse ? m : t, b: inverse ? t : m, res: t * m, t0: Date.now() };
   seance.attente = false;
-  const q = $("#question");
-  q.innerHTML = "";
-  const sa = document.createElement("span"); sa.textContent = seance.q.a;
-  const op = document.createElement("span"); op.className = "op"; op.textContent = "×";
-  const sb = document.createElement("span"); sb.textContent = seance.q.b;
-  q.append(sa, op, sb);
+  afficherOperation(!seance.vocal);
+  if (seance.vocal) dire();
   const champ = $("#reponse");
   champ.value = ""; champ.readOnly = false; champ.className = "reponse";
   $("#retour").textContent = ""; $("#retour").className = "retour";
@@ -1383,6 +1392,41 @@ function questionSuivante() {
   afficherAvancement();
   champ.focus();
 }
+
+/** Affiche l'opération, ou des « ? » en examen vocal (révélée après la réponse). */
+function afficherOperation(visible) {
+  const q = $("#question");
+  q.innerHTML = "";
+  const sa = document.createElement("span"); sa.textContent = visible ? seance.q.a : "?";
+  const op = document.createElement("span"); op.className = "op"; op.textContent = "×";
+  const sb = document.createElement("span"); sb.textContent = visible ? seance.q.b : "?";
+  q.append(sa, op, sb);
+  q.classList.toggle("ecoute", !visible);
+}
+
+// Examen vocal : synthèse vocale du navigateur, voix française si disponible.
+const voixPossible = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+function voixFrancaise() {
+  const voix = speechSynthesis.getVoices().filter(v => v.lang && v.lang.toLowerCase().startsWith("fr"));
+  return voix.find(v => /fr-FR/i.test(v.lang) && v.localService) || voix.find(v => /fr-FR/i.test(v.lang)) || voix[0] || null;
+}
+if (voixPossible) speechSynthesis.getVoices();   // déclenche le chargement des voix
+/** Dit l'opération en cours (« sept fois huit »). */
+function dire() {
+  if (!voixPossible || !seance || !seance.q) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(seance.q.a + " fois " + seance.q.b);
+  u.lang = "fr-FR";
+  const v = voixFrancaise();
+  if (v) u.voice = v;
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+  $("#reponse").focus();
+}
+$("#repeter").addEventListener("click", dire);
+$("#reponse").addEventListener("keydown", ev => {
+  if (seance && seance.vocal && (ev.key === "r" || ev.key === "R")) { ev.preventDefault(); dire(); }
+});
 
 function afficherAvancement() {
   const s = seance;
@@ -1423,6 +1467,7 @@ function repondre(valeur) {
   enregistrer(q.cle, ok, duree);
   s.faites++;
   if (s.mode === "chrono") { repondreChrono(ok, valeur); return; }
+  if (s.vocal) afficherOperation(true);
   const champ = $("#reponse"), retour = $("#retour"), ardoise = $("#ardoise");
   champ.readOnly = true;
   s.attente = true;
@@ -1512,6 +1557,7 @@ function terminer(abandon) {
   if (!s || s.fini) return;
   s.fini = true;
   arreterHorloges();
+  if (voixPossible) speechSynthesis.cancel();
   const c = eleve.compteurs;
   const sujet = eleve.sujets[SUJET];
   if (s.faites > 0) {
@@ -1523,12 +1569,13 @@ function terminer(abandon) {
     if (s.faites >= 10 && s.erreurs.length === 0) c.sansFaute++;
     if (s.erreurs.length >= 3) c.courage++;
     if (s.mode === "faibles") c.faibles++;
+    if (s.vocal) { c.examens++; if (s.faites >= 10 && s.erreurs.length === 0) c.examensParfaits++; }
     if (s.mode === "chrono") c.chronoRecord = Math.max(c.chronoRecord, Math.round(s.bons * 60 / reglages.dureeChrono));
   }
   const nouveaux = verifierSucces();
   s.nouveaux.push(...nouveaux);
   nouveaux.forEach(annoncer);
-  const libelle = { entrainement: "entraînement", faibles: "points faibles", chrono: "contre la montre", erreurs: "erreurs" }[s.mode];
+  const libelle = { entrainement: "entraînement", faibles: "points faibles", chrono: "contre la montre", erreurs: "erreurs" }[s.mode] + (s.vocal ? " vocal" : "");
   Stockage.sauver(true, eleve.prenom + " : " + s.bons + "/" + s.faites + " en " + libelle + (s.mode === "faibles" || s.mode === "erreurs" ? "" : " (tables " + eleve.reglages.tables.join(", ") + ")"));
   afficherBilan(abandon);
 }
