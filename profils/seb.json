@@ -1,7 +1,7 @@
 {
   "prenom": "Seb",
   "cree": 1792832615184,
-  "maj": 1792839675087,
+  "maj": 1792840573459,
   "reglages": {
     "tables": [
       1,
@@ -17,7 +17,7 @@
     "nb": 30,
     "mode": "entrainement",
     "melange": true,
-    "vocal": true
+    "vocal": false
   },
   "compteurs": {
     "bonnes": 48,
