@@ -1,7 +1,7 @@
 {
   "prenom": "Seb",
   "cree": 1792832615184,
-  "maj": 1792840621494,
+  "maj": 1793383713990,
   "reglages": {
     "tables": [
       1,
@@ -17,12 +17,12 @@
     "nb": 30,
     "mode": "entrainement",
     "melange": true,
-    "vocal": false
+    "vocal": true
   },
   "compteurs": {
-    "bonnes": 60,
-    "reponses": 68,
-    "serie": 10,
+    "bonnes": 62,
+    "reponses": 72,
+    "serie": 2,
     "serieMax": 16,
     "seances": 3,
     "sansFaute": 0,
@@ -34,7 +34,8 @@
     "examens": 1,
     "examensParfaits": 0,
     "jours": [
-      "2026-10-24"
+      "2026-10-24",
+      "2026-10-30"
     ]
   },
   "succes": {
@@ -461,6 +462,34 @@
           "n": 1,
           "d": 1792840619065,
           "rate": false
+        },
+        "2x3": {
+          "v": 1,
+          "b": 0,
+          "n": 0,
+          "d": 1793383689014,
+          "rate": true
+        },
+        "5x4": {
+          "v": 1,
+          "b": 0,
+          "n": 0,
+          "d": 1793383696365,
+          "rate": true
+        },
+        "9x10": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1793383703061,
+          "rate": false
+        },
+        "1x9": {
+          "v": 1,
+          "b": 1,
+          "n": 1,
+          "d": 1793383708356,
+          "rate": false
         }
       },
       "seances": [
@@ -539,6 +568,25 @@
           "total": 13,
           "bons": 12,
           "duree": 35415,
+          "abandon": true
+        },
+        {
+          "date": 1793383713990,
+          "mode": "entrainement",
+          "tables": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "total": 4,
+          "bons": 2,
+          "duree": 30877,
           "abandon": true
         }
       ]
